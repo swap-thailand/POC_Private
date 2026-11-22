@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Second Entry · Lineup</title>
+<meta name="description" content="Find your way in. Safe, face-value ticket swaps for Thailand's clubs and festivals. Demo with sample data.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;700;800;900&family=Anuphan:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+img{max-width:100%}
+.skip{position:absolute;left:-999px}.skip:focus{left:12px;top:12px;z-index:99;background:#fff;color:#000;padding:8px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}.wrap.narrow{max-width:760px}
+h1,h2,h3{font-family:var(--display);line-height:1.08;letter-spacing:var(--track,-.01em)}
+.kicker{display:inline-block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--accent)}
+.lead{font-size:18px;opacity:.85;max-width:560px}
+.muted{opacity:.65}.small{font-size:13px}
+/* header */
+.site-head{position:sticky;top:0;z-index:20;background:var(--head-bg,var(--bg));border-bottom:1px solid var(--line)}
+.head-row{display:flex;align-items:center;gap:28px;height:68px}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:22px;font-weight:700}
+.logo{color:var(--accent)}
+.nav{display:flex;gap:24px;font-size:15px;margin-right:auto}
+.nav a{opacity:.75;padding:6px 0;border-bottom:2px solid transparent}.nav a:hover,.nav a.on{opacity:1;border-color:var(--accent)}
+.head-actions{display:flex;align-items:center;gap:10px}
+.lang{padding:7px 12px;border-radius:var(--pill-r,999px);border:1px solid var(--line);font-size:13px;font-weight:700}
+.burger{display:none;width:40px;height:40px;flex-direction:column;justify-content:center;gap:6px;align-items:center}
+.burger span{width:20px;height:2px;background:currentColor;display:block}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:13px 20px;border-radius:var(--btn-r);font-weight:700;white-space:nowrap;transition:transform .12s,opacity .12s}
+.btn:hover{transform:translateY(-1px)}.btn:disabled{opacity:.5;transform:none}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.ghost{border:1.5px solid currentColor}
+.btn.line{background:#06c755;color:#fff}
+.btn.sm{padding:9px 14px;font-size:14px}.btn.wide{width:100%;margin-top:18px}
+.pill{display:inline-block;padding:4px 10px;border-radius:var(--pill-r,999px);font-size:12px;font-weight:600;background:var(--soft);color:var(--ink)}
+.muted-pill{opacity:.7}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:var(--pill-r,999px);border:1px solid var(--accent);color:var(--accent);white-space:nowrap}
+/* hero */
+.hero{padding:72px 0 56px}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(40px,5.6vw,72px);margin:14px 0 18px}
+.hero-search{display:flex;gap:8px;margin-top:28px;max-width:560px}
+.hero-search input{flex:1;padding:14px 16px;border-radius:var(--btn-r);border:1.5px solid var(--line);background:var(--card);outline:none;min-width:0}
+.hero-search input:focus{border-color:var(--accent)}
+.trust{list-style:none;display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;font-size:14px;font-weight:600}
+.trust li::before{content:"✓ ";color:var(--accent)}
+.feature{display:block;border-radius:var(--card-r);overflow:hidden;background:var(--card);border:1px solid var(--line)}
+.feature-meta{display:flex;justify-content:space-between;padding:14px 16px;font-size:14px}
+/* posters */
+.poster{position:relative;aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:space-between;padding:18px;color:#fff;overflow:hidden;background:var(--p-bg)}
+.poster.big{aspect-ratio:1/1}
+.p-date,.p-venue{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;position:relative}
+.p-name{font-family:var(--display);font-size:clamp(30px,4vw,48px);line-height:.92;font-weight:800;position:relative;word-break:break-word}
+.poster.big .p-name{font-size:clamp(40px,6vw,76px)}
+/* sections */
+.section{padding:64px 0}.section.tight{padding:28px 0 64px}
+.sec-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:24px}
+.sec-head h2,.venues h2,.band h2{font-size:clamp(28px,3.4vw,42px)}
+.events-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.ev-card{display:flex;flex-direction:column;border-radius:var(--card-r);overflow:hidden;background:var(--card);border:1px solid var(--line);transition:transform .15s}
+.ev-card:hover{transform:translateY(-3px)}
+.ev-info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px;flex:1}
+.ev-info h3{font-size:18px}.ev-info p{font-size:13px;opacity:.7}
+.ev-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px;font-size:13px}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.how-col{padding:28px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line)}
+.how-col h3{font-size:24px;margin-bottom:16px}
+.how-col ol{list-style:none;display:flex;flex-direction:column;gap:14px}
+.how-col li{display:flex;gap:14px;align-items:flex-start}
+.how-col li b{width:32px;height:32px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:var(--display)}
+.band{background:var(--band-bg,var(--accent));color:var(--band-ink,var(--on-accent));padding:48px 0}
+.band-row{display:flex;gap:24px;align-items:center}.band-ico{font-size:44px}.band p{opacity:.9;max-width:640px;margin-top:6px;font-size:17px}
+.venues-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+.venues h2{margin:10px 0 14px}.venues .btn{margin-top:22px}
+.stat-stack{display:grid;gap:12px}
+.stat{padding:20px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.stat b{font-family:var(--display);font-size:28px}
+.faq details{border-bottom:1px solid var(--line);padding:18px 0}
+.faq summary{cursor:pointer;font-weight:700;font-size:17px;list-style:none;display:flex;justify-content:space-between}
+.faq summary::after{content:"+";color:var(--accent);font-size:22px;line-height:1}
+.faq details[open] summary::after{content:"−"}
+.faq details p{margin-top:10px;opacity:.8}
+/* event page */
+.ev-hero{padding:28px 0 8px}
+.back{font-size:14px;opacity:.75;display:inline-block;margin-bottom:20px}
+.ev-hero-grid{display:grid;grid-template-columns:360px 1fr;gap:40px;align-items:start}
+.ev-hero-grid .poster{border-radius:var(--card-r)}
+.ev-head h1{font-size:clamp(36px,4.6vw,60px);margin:10px 0}
+.avail{display:inline-flex;align-items:center;gap:8px;margin:18px 0;font-weight:600;font-size:14px}
+.avail .dot{width:9px;height:9px;border-radius:50%;background:var(--live);box-shadow:0 0 0 4px color-mix(in srgb,var(--live) 25%,transparent);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px transparent}}
+.guarantee{display:flex;gap:12px;padding:16px;border-radius:var(--card-r);background:var(--soft);font-size:14px;max-width:560px}
+.guarantee p{opacity:.8;margin-top:2px}
+.transfer{font-size:14px;margin-top:14px;opacity:.85}
+.listings{display:flex;flex-direction:column;gap:12px}
+.row-card{display:grid;grid-template-columns:1.3fr 1.3fr 1fr auto;gap:20px;align-items:center;padding:18px 20px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line);cursor:pointer;transition:border-color .15s}
+.row-card:hover{border-color:var(--accent)}
+.rc-type{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.rc-seller{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14px}
+.rc-seller small,.rc-price small{display:block;font-weight:400;font-size:12px;opacity:.65}
+.rc-seller.big{margin-top:18px}
+.avatar{width:38px;height:38px;flex:none;border-radius:var(--avatar-r,50%);display:grid;place-items:center;font-weight:800;background:var(--accent);color:var(--on-accent)}
+.rc-price{text-align:right}.rc-price b{font-family:var(--display);font-size:22px}
+.alert-link{display:block;margin:18px auto 0;font-weight:600;text-decoration:underline;text-underline-offset:4px}
+.empty{text-align:center;padding:48px 20px;border:1.5px dashed var(--line);border-radius:var(--card-r)}.empty p{margin-bottom:16px;opacity:.75}
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.modal{position:fixed;left:50%;top:50%;width:min(520px,calc(100% - 32px));max-height:88vh;overflow:auto;transform:translate(-50%,-46%);opacity:0;pointer-events:none;transition:.22s;z-index:41;background:var(--modal-bg,var(--card));border-radius:var(--card-r);border:1px solid var(--line)}
+.modal-open .modal{opacity:1;transform:translate(-50%,-50%);pointer-events:auto}.modal-open .modal-bg{opacity:1;pointer-events:auto}
+.modal .x{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;background:var(--soft)}
+.modal-body{padding:28px}
+.modal h2{font-size:28px;margin:10px 0 4px}
+.modal h4,.page-title+h4,.narrow h4,.ticket h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin:22px 0 10px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:15px}.kv dd{text-align:right}
+.kv .tot{font-weight:800;font-size:18px;padding-top:10px;border-top:1px solid var(--line)}
+blockquote{padding:12px 14px;border-radius:calc(var(--card-r)*.6);background:var(--soft);font-size:14px;margin-bottom:8px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:var(--btn-r);background:var(--soft);margin:20px 0}
+.seg button{padding:11px;border-radius:calc(var(--btn-r)*.8);font-weight:600;font-size:14px}.seg button.on{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.qr{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px;border-radius:var(--card-r);background:var(--soft)}
+.qr small{font-size:13px;opacity:.7}
+.qr-grid{display:grid;grid-template-columns:repeat(11,12px);gap:2px;padding:10px;background:#fff;border-radius:6px}
+.qr-grid i{width:12px;height:12px;background:#eee}.qr-grid i.k{background:#111}
+.cardpay{display:flex;flex-direction:column;gap:8px}.fake-input{padding:14px;border-radius:calc(var(--btn-r));background:var(--soft);letter-spacing:.12em}
+.apple{padding:14px;border-radius:var(--btn-r);background:#000;color:#fff;text-align:center;font-weight:700}
+.escrow{font-size:14px;margin-top:16px}
+/* tickets */
+.page-title{font-size:clamp(32px,4vw,48px);margin-bottom:24px}
+.ticket{display:grid;grid-template-columns:1fr auto;gap:28px;padding:28px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line);margin-bottom:16px}
+.ticket h2{font-size:30px;margin:6px 0 4px}
+.tk-qr{display:flex;flex-direction:column;align-items:center;gap:12px;padding-left:28px;border-left:2px dashed var(--line)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.resolved{margin-top:16px;padding:14px;border-radius:calc(var(--card-r)*.6);background:var(--soft)}
+/* sell */
+.sell-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:40px;align-items:start}
+.steps{list-style:none;display:flex;flex-direction:column;gap:14px}
+.steps li{display:flex;gap:16px;padding:20px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line)}
+.steps li>b{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:var(--display)}
+.steps li>div{flex:1;min-width:0}.steps h3{font-size:18px;margin-bottom:10px}
+.steps select{width:100%;padding:12px;border-radius:var(--btn-r);border:1px solid var(--line);background:var(--bg)}
+.upload{width:100%;padding:22px;border:2px dashed var(--line);border-radius:var(--btn-r);font-size:14px}.upload.done{border-style:solid;border-color:var(--accent)}
+.price-in{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:var(--btn-r);border:1px solid var(--line);background:var(--bg)}
+.price-in input{border:none;background:none;outline:none;padding:8px 0;width:100%;font-size:22px;font-weight:700}
+.steps small{display:block;font-size:13px;margin-top:8px;opacity:.7}.steps small.err{color:var(--bad);opacity:1}
+.check{display:flex;gap:8px;align-items:center;margin-top:14px}
+.summary{position:sticky;top:92px;padding:22px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line)}
+.summary h3{font-size:20px;margin-bottom:14px}.summary .poster{border-radius:calc(var(--card-r)*.7);margin-bottom:18px}.summary .muted{margin-top:14px}
+.status{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:18px}
+.status li{font-size:11px;text-align:center;opacity:.4;display:flex;flex-direction:column;gap:6px}
+.status li span{height:6px;border-radius:3px;background:var(--line)}.status li.on{opacity:1}.status li.on span{background:var(--live)}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line);margin-bottom:10px}
+.trow small{display:block;opacity:.7;font-size:13px}.trow .btn-row{margin:0;flex-wrap:nowrap}
+/* footer + toast */
+.site-foot{border-top:1px solid var(--line);padding:32px 0;margin-top:24px}
+.foot-row{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:13px}
+.foot-row p{opacity:.65}.team-link{text-decoration:underline;text-underline-offset:3px;opacity:.75}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,calc(100% + 40px));width:min(440px,calc(100% - 32px));padding:14px 18px;border-radius:var(--btn-r);background:#06c755;color:#fff;font-weight:600;transition:transform .3s,opacity .3s;z-index:60;opacity:0;pointer-events:none}
+.toast.show{transform:translate(-50%,0);opacity:1}
+/* ---------- mobile ---------- */
+@media (max-width:860px){
+ .wrap{padding:0 18px}
+ .head-row{height:60px;gap:12px}
+ .nav{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;gap:0;background:var(--head-bg,var(--bg));border-bottom:1px solid var(--line);padding:8px 18px 16px}
+ .nav a{padding:14px 0;border-bottom:1px solid var(--line);font-size:17px;opacity:1}
+ .nav-open .nav{display:flex}
+ .burger{display:flex}.head-actions{margin-left:auto}
+ .sell-cta{padding:9px 14px;font-size:14px}
+ .hero{padding:36px 0 32px}
+ .hero-grid,.venues-grid,.ev-hero-grid,.sell-grid,.how-grid{grid-template-columns:1fr;gap:28px}
+ .hero-aside{order:2}
+ .lead{font-size:16px}
+ .hero-search{flex-direction:column}
+ .events-grid{grid-template-columns:1fr 1fr;gap:12px}
+ .ev-info{padding:10px 12px 12px}.ev-info h3{font-size:15px}.ev-foot{flex-direction:column;align-items:flex-start;gap:6px}
+ .poster{padding:12px}.p-name{font-size:26px}
+ .section{padding:44px 0}
+ .band-row{flex-direction:column;align-items:flex-start;gap:10px}
+ .ev-hero-grid .poster{aspect-ratio:16/10}
+ .row-card{grid-template-columns:1fr auto;gap:12px}
+ .rc-seller{grid-column:1/-1;order:3}.rc-price{order:2}.row-card .btn{display:none}
+ .modal{top:auto;bottom:0;transform:translate(-50%,100%);width:100%;max-height:90vh;border-radius:var(--card-r) var(--card-r) 0 0}
+ .modal-open .modal{transform:translate(-50%,0)}
+ .modal-body{padding:24px 20px 32px}
+ .ticket{grid-template-columns:1fr}.tk-qr{border-left:none;border-top:2px dashed var(--line);padding:22px 0 0}
+ .summary{position:static}
+ .trow{flex-direction:column;align-items:stretch}.trow .btn-row .btn{flex:1}
+ .toast{top:12px;bottom:auto;transform:translate(-50%,calc(-100% - 40px))}
+}
+@media (max-width:380px){.events-grid{grid-template-columns:1fr}}
+
+.ev-date{display:none}
+.foot-links{display:flex;gap:18px;align-items:center}.foot-links a,.foot-links button{font-size:13px;text-decoration:underline;text-underline-offset:3px;opacity:.75}
+.counters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.counter{padding:20px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line)}
+.counter b{display:block;font-family:var(--display);font-size:40px;line-height:1}.counter span{font-size:13px;opacity:.7}
+.pilot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}.pilot-grid.two{grid-template-columns:1fr 1fr}
+.pcard{padding:22px;border-radius:var(--card-r);background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.pcard h3{font-size:20px}.pcard p{font-size:14px;opacity:.85}.pcard .draft{padding:12px;border-radius:calc(var(--card-r)*.6);background:var(--soft);font-style:italic}
+.pcard h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-top:8px}
+.lbl{display:flex;flex-direction:column;gap:6px;font-size:13px;width:100%}
+.pcard select,.pcard textarea{width:100%;padding:10px 12px;border-radius:var(--btn-r);border:1px solid var(--line);background:var(--bg);resize:vertical;font-size:14px}
+.pcard textarea{border-radius:calc(var(--card-r)*.6)}
+.logrow{font-size:13px;padding:8px 0;border-bottom:1px solid var(--line);width:100%}.logrow small{display:block;opacity:.55;font-size:11px}
+@media (max-width:860px){.counters{grid-template-columns:1fr 1fr}.pilot-grid,.pilot-grid.two{grid-template-columns:1fr}}
+
+:root{--display:'Archivo','Anuphan',sans-serif;--body:'Anuphan','Archivo',sans-serif;--btn-r:999px;--card-r:16px;--track:-.035em;--live:#ff3b30;--bad:#ff3b30}
+.brand .word{font-weight:900;letter-spacing:-.045em;text-transform:uppercase;font-size:20px;white-space:nowrap}
+.hero h1{font-size:clamp(48px,7.4vw,108px)}
+@media (max-width:860px){.brand .word{font-size:16px}.brand{gap:6px}.head-row{gap:8px}.sell-cta{padding:8px 12px;font-size:13px}.lang{padding:6px 10px}}
+.hero h1,.page-title,.ev-head h1{font-weight:900}
+.p-name{font-weight:900;letter-spacing:-.045em;text-transform:uppercase}
+.p-wp{--p-bg:linear-gradient(160deg,#ff6aa2 0%,#ff3b30 55%,#7a00ff 100%)}
+.p-clutch{--p-bg:linear-gradient(160deg,#ffe14f 0%,#ff8a00 100%)}
+.p-edc{--p-bg:linear-gradient(160deg,#00d4ff 0%,#6b3bff 55%,#ff2bd6 100%)}
+.p-s2o{--p-bg:linear-gradient(160deg,#3cf0b0 0%,#0094ff 100%)}
+.trust li::before{color:var(--live)}
+.kicker{opacity:.6}
+
+:root{--display:'Inter Tight','Anuphan',sans-serif;--body:'Inter Tight','Anuphan',sans-serif;--bg:#fff;--card:#fff;--soft:#f2f2f2;--ink:#000;--line:#000;--accent:#000;--on-accent:#fff;--card-r:0px;--btn-r:999px}
+.site-head{border-bottom:2px solid #000}
+.hero h1{font-size:clamp(56px,8vw,112px);letter-spacing:-.05em}
+.hero-aside .poster{border-radius:0}
+.events-grid{display:flex;flex-direction:column;gap:0;border-top:2px solid #000}
+.ev-card{display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:center;padding:18px 0;border:none;border-bottom:1px solid #000;border-radius:0;background:transparent}
+.ev-card:hover{transform:none;background:#f2f2f2}
+.ev-card .poster{aspect-ratio:1/1;padding:8px;border-radius:0;filter:grayscale(1);transition:filter .2s}
+.ev-card:hover .poster{filter:none}
+.ev-card .poster span{display:none}
+.ev-info{display:grid;grid-template-columns:180px 1fr auto;align-items:center;gap:6px 24px;padding:0}
+.ev-date{display:block;font-weight:900;font-size:20px;letter-spacing:-.03em;text-transform:uppercase;grid-row:span 2}
+.ev-info h3{font-size:clamp(24px,3vw,40px);font-weight:900;letter-spacing:-.04em;text-transform:uppercase}
+.ev-info p{grid-column:2}
+.ev-foot{grid-column:3;grid-row:1/span 2;flex-direction:column;align-items:flex-end;gap:6px;padding:0}
+.pill{background:#000;color:#fff;border-radius:999px}
+.how-col,.stat,.counter,.row-card,.steps li,.summary,.ticket,.trow,.pcard{border:1px solid #000}
+.band{--band-bg:#000;--band-ink:#fff}
+.badge{border-color:#000;color:#000}
+@media (max-width:860px){.ev-card{grid-template-columns:72px 1fr;gap:14px}.ev-info{grid-template-columns:1fr;gap:2px}.ev-date{font-size:13px;grid-row:auto}.ev-info h3{font-size:22px}.ev-info p{grid-column:1;font-size:12px}.ev-foot{grid-column:1;grid-row:auto;flex-direction:row;align-items:center;justify-content:space-between;margin-top:6px}}
+</style></head>
+<body class="t-4-lineup">
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="#home"><span class="logo">↘</span><span class="word">Second Entry</span></a>
+    <nav class="nav" id="nav">
+      <a href="#home" data-i="navEvents"></a>
+      <a href="#how" data-i="navHow"></a>
+      <a href="#venues" data-i="navVenues"></a>
+      <a href="#tickets" data-i="navMine"></a>
+    </nav>
+    <div class="head-actions">
+      <button class="lang" id="langBtn" aria-label="Switch language">TH</button>
+      <a class="btn primary sell-cta" href="#sell" data-i="navSell"></a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<main id="page" tabindex="-1"></main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <a class="brand" href="#home"><span class="logo">↘</span><span class="word">Second Entry</span></a>
+    <p data-i="footer"></p>
+    <div class="foot-links"><a href="#team" data-i="teamLink"></a><a href="#pilot" data-i="navPilot"></a><button id="resetBtn" data-i="reset"></button></div>
+  </div>
+</footer>
+<div class="modal-bg" id="modalBg"></div>
+<section class="modal" id="modal" role="dialog" aria-modal="true"></section>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const I18N={"en": {"navEvents": "Events", "navHow": "How it works", "navVenues": "For venues", "navMine": "My tickets", "navSell": "Sell a ticket", "heroKicker": "Thailand · Fan-to-fan resale", "heroTitle": "Find your way in.", "heroSub": "Buy and sell club and festival tickets at face value. We hold the money until you're inside.", "search": "Search an event, artist or venue", "ctaBuy": "Find tickets", "ctaSell": "Sell a ticket", "t1": "Never above face value", "t2": "Money held until you're in", "t3": "Verified sellers", "upcoming": "Upcoming events", "listed": "{n} listed", "waitlist": "Waitlist open", "from": "from", "howTitle": "How it works", "buyers": "Buying", "sellers": "Selling", "hb1": "Scan the QR at the door or search the event.", "hb2": "Pay with PromptPay or card. We hold your money.", "hb3": "Get in, tap \"It worked\", and the seller is paid.", "hs1": "Pick the event and upload your ticket.", "hs2": "Set a price up to face value. We check it.", "hs3": "Paid as soon as the buyer is in, usually the same night.", "gTitle": "Your money is held until you're in.", "gBody": "Sellers are paid only after you confirm the ticket worked. If it doesn't, you get a full refund.", "venuesKicker": "For venues and promoters", "venuesTitle": "Fill the room. Keep resale fair.", "venuesBody": "List unsold or returned tickets on the night, see real demand for each event, and keep scalpers out of your crowd.", "venuesCta": "Talk to us on LINE", "faqTitle": "Questions", "q1": "What if my ticket doesn't work?", "a1": "We freeze the seller's payout and refund you in full. Message us on LINE and a real person answers.", "q2": "Why is there a fee?", "a2": "The ฿30 to ฿100 protection fee pays for checking every ticket and holding your money safely.", "q3": "Can I sell above face value?", "a3": "No. Every ticket is capped at the price printed on it. That keeps scalpers out.", "q4": "When do sellers get paid?", "a4": "As soon as the buyer confirms they're in, usually the same night.", "footer": "Built for Thailand's nightlife. Demo with sample data. No real payments.", "teamLink": "Team review desk (demo)", "back": "All events", "available": "{n} tickets available", "never": "Never above face value", "verified": "Verified", "swaps": "{n} swaps", "incl": "incl. ฿{fee} protection fee", "face": "Face value", "buy": "Buy safely", "none": "No tickets listed yet.", "alert": "Alert me when one drops", "alertSet": "You're on the list. We'll message you on LINE.", "reviews": "What buyers say", "details": "Ticket details", "transfer": "How it transfers", "checkout": "Checkout", "tPrice": "Ticket", "fee": "Protection fee", "total": "Total", "pp": "PromptPay QR", "card": "Card / Apple Pay", "escrow": "We hold your payment. The seller is paid after you confirm you got in.", "scan": "Scan with any Thai bank app", "simulate": "Simulate payment (demo)", "paid": "Payment held safely", "yourTicket": "Your ticket", "confirm": "Confirm after you get in", "auto": "Auto-confirms in {t} if you don't report a problem.", "worked": "It worked, I'm in", "problem": "Report a problem", "workedMsg": "Enjoy the night. The seller has been paid.", "problemMsg": "Payout frozen. Our team will message you on LINE within 15 minutes.", "noMine": "No tickets yet. Buy one and it shows up here.", "sellTitle": "Sell a ticket in 3 steps", "s1": "Pick the event", "s2": "Upload your ticket", "s3": "Set your price", "upHint": "Drop a screenshot or PDF of your ticket", "max": "Up to face value: ฿{max}", "tooHigh": "Price can't be above face value.", "id": "Verify my ID (demo)", "list": "List my ticket", "youGet": "You receive", "summary": "Summary", "stReview": "Under review", "stLive": "Live", "stSold": "Sold", "stPaid": "Paid out", "soldToast": "LINE: Your ticket sold. You're paid as soon as the buyer is in.", "team": "Review desk", "pending": "Pending listings", "held": "Payments held", "banned": "Banned sellers", "approve": "Approve", "ban": "Ban", "release": "Release payout", "refund": "Refund buyer", "empty": "Nothing here.", "close": "Close", "needAll": "Add your ticket, a price and the ID check first.", "menu": "Menu", "navPilot": "Pilot & data", "pilotTitle": "Pilot & data", "cSub": "Listings submitted", "cSales": "Sales confirmed", "cFail": "Failed tickets reported", "cRepeat": "Repeat buyers", "recruitT": "Recruit", "recruitB": "Interview buyers and sellers in the White Party, EDC, Wonderfruit and Clutch communities. Ask hostels to share an opt-in invite and use LINE for follow-up. Check dates and organizer permission before any on-site outreach.", "outreachT": "Outreach draft", "outreachB": "I'm testing a fan-to-fan ticket resale tool in Thailand. Have you bought or sold a ticket through social media recently? I'm looking for a 10-minute conversation about what happened. This is a prototype and involves no real payment.", "testT": "Test demand", "testB": "Target 12 interviews and 5 guided demos. Ask about the last trade they tried, the channel and what happened. Move to a pilot once 3 sellers and 3 buyers opt in for the same event.", "copy": "Copy", "copied": "Copied", "channel": "Channel", "feedback": "Anonymized feedback", "logFb": "Log feedback", "fbLog": "Feedback log", "actLog": "Activity log", "noAct": "No activity yet. Try buying or selling a ticket.", "exportBtn": "Copy activity & feedback (JSON)", "reset": "Reset demo", "resetDone": "Demo reset", "aSubmit": "Listing submitted", "aPay": "Payment held", "aOk": "Sale confirmed", "aFail": "Failed ticket reported", "aApprove": "Listing approved", "aBan": "Seller banned", "aRelease": "Payout released", "aAlert": "Waitlist signup"}, "th": {"navEvents": "อีเวนต์", "navHow": "วิธีใช้งาน", "navVenues": "สำหรับผู้จัดงาน", "navMine": "ตั๋วของฉัน", "navSell": "ขายตั๋ว", "heroKicker": "ไทย · ซื้อขายต่อระหว่างแฟน ๆ", "heroTitle": "หาทางเข้างานของคุณ", "heroSub": "ซื้อขายตั๋วคลับและเฟสติวัลในราคาหน้าตั๋ว เราพักเงินไว้จนกว่าคุณจะเข้างาน", "search": "ค้นหางาน ศิลปิน หรือสถานที่", "ctaBuy": "หาตั๋ว", "ctaSell": "ขายตั๋ว", "t1": "ไม่เกินราคาหน้าตั๋ว", "t2": "พักเงินจนกว่าคุณจะเข้างาน", "t3": "ผู้ขายยืนยันตัวตน", "upcoming": "อีเวนต์ที่กำลังจะมาถึง", "listed": "ลงขาย {n} ใบ", "waitlist": "เปิดรายชื่อรอ", "from": "เริ่มต้น", "howTitle": "ใช้งานอย่างไร", "buyers": "ซื้อ", "sellers": "ขาย", "hb1": "สแกน QR หน้างาน หรือค้นหาอีเวนต์", "hb2": "จ่ายด้วยพร้อมเพย์หรือบัตร เราพักเงินไว้ให้", "hb3": "เข้างานแล้วกด \"เข้างานได้แล้ว\" ผู้ขายจึงได้รับเงิน", "hs1": "เลือกอีเวนต์และอัปโหลดตั๋ว", "hs2": "ตั้งราคาไม่เกินหน้าตั๋ว เราตรวจสอบให้", "hs3": "ได้เงินทันทีที่ผู้ซื้อเข้างาน ส่วนใหญ่ภายในคืนนั้น", "gTitle": "เราพักเงินไว้จนกว่าคุณจะเข้างานได้", "gBody": "ผู้ขายจะได้รับเงินหลังจากคุณยืนยันว่าตั๋วใช้ได้เท่านั้น ถ้าใช้ไม่ได้ คืนเงินเต็มจำนวน", "venuesKicker": "สำหรับสถานที่และผู้จัดงาน", "venuesTitle": "เติมคนให้เต็มงาน ขายต่ออย่างยุติธรรม", "venuesBody": "ขายตั๋วที่เหลือหรือถูกคืนในคืนงาน ดูความต้องการจริงของแต่ละอีเวนต์ และกันพวกปั่นราคาออกจากงานของคุณ", "venuesCta": "คุยกับเราทาง LINE", "faqTitle": "คำถามที่พบบ่อย", "q1": "ถ้าตั๋วใช้ไม่ได้ล่ะ?", "a1": "เราระงับเงินของผู้ขายและคืนเงินคุณเต็มจำนวน ทักเราทาง LINE มีทีมงานตัวจริงตอบ", "q2": "ทำไมต้องมีค่าธรรมเนียม?", "a2": "ค่าคุ้มครอง ฿30 ถึง ฿100 ใช้ตรวจสอบตั๋วทุกใบและพักเงินของคุณอย่างปลอดภัย", "q3": "ขายเกินราคาหน้าตั๋วได้ไหม?", "a3": "ไม่ได้ ตั๋วทุกใบจำกัดราคาไม่เกินหน้าตั๋ว เพื่อกันพวกปั่นราคา", "q4": "ผู้ขายได้เงินเมื่อไหร่?", "a4": "ทันทีที่ผู้ซื้อยืนยันว่าเข้างานได้ ส่วนใหญ่ภายในคืนนั้น", "footer": "สร้างเพื่อไนท์ไลฟ์ไทย เดโมด้วยข้อมูลตัวอย่าง ไม่มีการชำระเงินจริง", "teamLink": "โต๊ะตรวจสอบของทีม (เดโม)", "back": "อีเวนต์ทั้งหมด", "available": "มีตั๋ว {n} ใบ", "never": "ไม่เกินราคาหน้าตั๋ว", "verified": "ยืนยันตัวตนแล้ว", "swaps": "แลกแล้ว {n} ครั้ง", "incl": "รวมค่าคุ้มครอง ฿{fee}", "face": "ราคาหน้าตั๋ว", "buy": "ซื้ออย่างปลอดภัย", "none": "ยังไม่มีตั๋วลงขาย", "alert": "แจ้งเตือนเมื่อมีตั๋ว", "alertSet": "ลงชื่อแล้ว เราจะแจ้งคุณทาง LINE", "reviews": "รีวิวจากผู้ซื้อ", "details": "รายละเอียดตั๋ว", "transfer": "วิธีโอนตั๋ว", "checkout": "ชำระเงิน", "tPrice": "ค่าตั๋ว", "fee": "ค่าคุ้มครอง", "total": "รวม", "pp": "พร้อมเพย์ QR", "card": "บัตร / Apple Pay", "escrow": "เราพักเงินของคุณไว้ ผู้ขายจะได้รับเงินหลังจากคุณยืนยันว่าเข้างานได้", "scan": "สแกนด้วยแอปธนาคารใดก็ได้", "simulate": "จำลองการชำระเงิน (เดโม)", "paid": "พักเงินเรียบร้อย", "yourTicket": "ตั๋วของคุณ", "confirm": "ยืนยันหลังเข้างาน", "auto": "ระบบยืนยันอัตโนมัติใน {t} หากไม่มีการแจ้งปัญหา", "worked": "เข้างานได้แล้ว", "problem": "แจ้งปัญหา", "workedMsg": "ขอให้สนุกนะ ผู้ขายได้รับเงินแล้ว", "problemMsg": "ระงับการจ่ายเงินแล้ว ทีมงานจะติดต่อทาง LINE ภายใน 15 นาที", "noMine": "ยังไม่มีตั๋ว ซื้อแล้วจะแสดงที่นี่", "sellTitle": "ขายตั๋วใน 3 ขั้นตอน", "s1": "เลือกอีเวนต์", "s2": "อัปโหลดตั๋ว", "s3": "ตั้งราคา", "upHint": "วางภาพหน้าจอหรือไฟล์ PDF ของตั๋ว", "max": "ไม่เกินราคาหน้าตั๋ว: ฿{max}", "tooHigh": "ตั้งราคาเกินราคาหน้าตั๋วไม่ได้", "id": "ยืนยันตัวตน (เดโม)", "list": "ลงขายตั๋ว", "youGet": "คุณได้รับ", "summary": "สรุป", "stReview": "กำลังตรวจสอบ", "stLive": "ลงขายแล้ว", "stSold": "ขายแล้ว", "stPaid": "โอนเงินแล้ว", "soldToast": "LINE: ตั๋วของคุณขายได้แล้ว รับเงินทันทีที่ผู้ซื้อเข้างาน", "team": "โต๊ะตรวจสอบ", "pending": "รายการรอตรวจสอบ", "held": "เงินที่พักไว้", "banned": "ผู้ขายที่ถูกแบน", "approve": "อนุมัติ", "ban": "แบน", "release": "โอนเงินให้ผู้ขาย", "refund": "คืนเงินผู้ซื้อ", "empty": "ไม่มีรายการ", "close": "ปิด", "needAll": "เพิ่มตั๋ว ราคา และยืนยันตัวตนก่อน", "menu": "เมนู", "navPilot": "ไพลอตและข้อมูล", "pilotTitle": "ไพลอตและข้อมูล", "cSub": "ลงขาย", "cSales": "ขายสำเร็จ", "cFail": "แจ้งตั๋วใช้ไม่ได้", "cRepeat": "ผู้ซื้อซ้ำ", "recruitT": "หาผู้ร่วมทดสอบ", "recruitB": "สัมภาษณ์ผู้ซื้อและผู้ขายในกลุ่ม White Party, EDC, Wonderfruit และ Clutch ขอให้โฮสเทลช่วยแชร์คำเชิญ และใช้ LINE ติดตามผล ตรวจสอบวันงานและขออนุญาตผู้จัดก่อนไปพูดคุยหน้างาน", "outreachT": "ข้อความชวนคุย", "outreachB": "กำลังทดลองเครื่องมือซื้อขายตั๋วต่อระหว่างแฟน ๆ ในไทย ช่วงนี้เคยซื้อหรือขายตั๋วผ่านโซเชียลมีเดียไหม? อยากขอคุยสั้น ๆ 10 นาทีว่าเกิดอะไรขึ้นบ้าง นี่เป็นต้นแบบ ไม่มีการชำระเงินจริง", "testT": "ทดสอบความต้องการ", "testB": "เป้าหมาย สัมภาษณ์ 12 คน และสาธิตแบบนำทาง 5 ครั้ง ถามถึงการซื้อขายครั้งล่าสุด ช่องทาง และผลลัพธ์ เริ่มไพลอตเมื่อมีผู้ขาย 3 คนและผู้ซื้อ 3 คนสมัครสำหรับงานเดียวกัน", "copy": "คัดลอก", "copied": "คัดลอกแล้ว", "channel": "ช่องทาง", "feedback": "ความคิดเห็น (ไม่ระบุตัวตน)", "logFb": "บันทึกความคิดเห็น", "fbLog": "บันทึกความคิดเห็น", "actLog": "บันทึกกิจกรรม", "noAct": "ยังไม่มีกิจกรรม ลองซื้อหรือขายตั๋วดู", "exportBtn": "คัดลอกกิจกรรมและความคิดเห็น (JSON)", "reset": "รีเซ็ตเดโม", "resetDone": "รีเซ็ตแล้ว", "aSubmit": "ลงขายตั๋ว", "aPay": "พักเงิน", "aOk": "ขายสำเร็จ", "aFail": "แจ้งตั๋วใช้ไม่ได้", "aApprove": "อนุมัติรายการ", "aBan": "แบนผู้ขาย", "aRelease": "โอนเงินให้ผู้ขาย", "aAlert": "ลงชื่อรอตั๋ว"}}, EVENTS=[{"id": "wp", "name": "White Party Bangkok", "short": "WHITE PARTY", "sub": "Main Event", "date": "30 Dec 2026", "venue": "Paragon Hall, Siam Paragon", "city": "Bangkok", "cap": 3200, "artists": ["Joe Gauthreaux", "Enrico Meloni"], "transfer": {"en": "Name change in pre-registration (once)", "th": "เปลี่ยนชื่อตอนลงทะเบียนล่วงหน้า (ได้ครั้งเดียว)"}}, {"id": "clutch", "name": "Clutch Fridays", "short": "CLUTCH", "sub": "House & disco", "date": "Fri 27 Nov 2026", "venue": "Clutch", "city": "Bangkok", "cap": 300, "artists": ["Resident DJs"], "transfer": {"en": "QR e-ticket, reissued to you", "th": "อีทิกเก็ต QR ออกใหม่ในชื่อคุณ"}}, {"id": "edc", "name": "EDC Thailand", "short": "EDC", "sub": "3-day GA", "date": "18-20 Dec 2026", "venue": "Rhythm Park", "city": "Phuket", "cap": 9590, "artists": ["Under the Electric Sky"], "transfer": {"en": "Unworn delivered wristband, handed over", "th": "ริสต์แบนด์ที่ยังไม่ได้ใส่ ส่งมอบตัวต่อตัว"}}, {"id": "s2o", "name": "S2O Songkran", "short": "S2O", "sub": "Water music festival", "date": "Apr 2027", "venue": "TBA", "city": "Bangkok", "cap": 0, "artists": ["Lineup TBA"], "transfer": {"en": "TBA", "th": "ยังไม่ประกาศ"}}], REVIEWS={"en": ["“Name change went through in 10 minutes. Got in no problem.”", "“Way better than the Facebook group. Felt safe paying.”"], "th": ["“เปลี่ยนชื่อเสร็จใน 10 นาที เข้างานได้สบาย”", "“ดีกว่าซื้อในกลุ่มเฟซบุ๊กมาก จ่ายเงินแล้วรู้สึกปลอดภัย”"]};
+const DEFAULTS={LISTINGS:[{"id": 1, "ev": "wp", "type": "Main Event GA", "face": 3200, "price": 2900, "seller": "Ploy K.", "swaps": 12, "rating": 4.9}, {"id": 2, "ev": "wp", "type": "NYE Countdown GA", "face": 3500, "price": 3500, "seller": "Nat S.", "swaps": 4, "rating": 5.0}, {"id": 3, "ev": "wp", "type": "All Night Pass GA", "face": 8800, "price": 8000, "seller": "Mike T.", "swaps": 7, "rating": 4.8}, {"id": 4, "ev": "clutch", "type": "Entry + 1 drink", "face": 300, "price": 250, "seller": "Fah R.", "swaps": 21, "rating": 4.9}, {"id": 5, "ev": "clutch", "type": "Entry", "face": 250, "price": 250, "seller": "Ben W.", "swaps": 2, "rating": 4.7}, {"id": 6, "ev": "edc", "type": "3-Day GA wristband", "face": 9590, "price": 9200, "seller": "Aom P.", "swaps": 9, "rating": 5.0}],PENDING:[{"id": 101, "seller": "Joy M.", "ev": "wp", "type": "Main Event GA", "price": 3000}, {"id": 102, "seller": "Tony L.", "ev": "clutch", "type": "Entry", "price": 300}],HELD:[{"id": 201, "buyer": "Sam R.", "seller": "Fah R.", "ev": "clutch", "amount": 280}],BANNED:[],mine:[],activity:[],feedback:[],lang:'en'};
+const KEY='second-entry-demo-v1';
+let S;
+function load(){try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):structuredClone(DEFAULTS);}catch(e){S=structuredClone(DEFAULTS);}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+load();
+let q='', sell={ev:'wp',file:false,price:'',id:false,status:null};
+const $=s=>document.querySelector(s);
+const t=(k,v={})=>(I18N[S.lang][k]||k).replace(/\{(\w+)\}/g,(_,x)=>v[x]);
+const baht=n=>'฿'+Number(n).toLocaleString('en-US');
+const fee=p=>p<=1000?30:Math.min(Math.round(p*0.03),100);
+const ev=id=>EVENTS.find(e=>e.id===id);
+const live=id=>S.LISTINGS.filter(l=>l.ev===id&&!S.BANNED.includes(l.seller));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function log(type,detail){S.activity.unshift({ts:new Date().toISOString(),type,detail});save();}
+function toast(m){const el=$('#toast');el.textContent=m;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3400);}
+function alertMe(id){log('aAlert',ev(id).name);toast(t('alertSet'));}
+function statics(){document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i));$('#langBtn').textContent=S.lang==='en'?'TH':'EN';document.documentElement.lang=S.lang;}
+function openModal(h){$('#modal').innerHTML='<button class="x" onclick="closeModal()" aria-label="'+t('close')+'">✕</button><div class="modal-body">'+h+'</div>';document.body.classList.add('modal-open');}
+function closeModal(){document.body.classList.remove('modal-open');}
+$('#modalBg').onclick=closeModal;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+$('#langBtn').onclick=()=>{S.lang=S.lang==='en'?'th':'en';save();statics();route();};
+$('#burger').onclick=()=>{const o=document.body.classList.toggle('nav-open');$('#burger').setAttribute('aria-expanded',o);};
+$('#nav').onclick=()=>document.body.classList.remove('nav-open');
+$('#resetBtn').onclick=()=>{const l=S.lang;S=structuredClone(DEFAULTS);S.lang=l;sell={ev:'wp',file:false,price:'',id:false,status:null};save();toast(t('resetDone'));location.hash='#home';route();};
+
+function poster(e,big){return `<div class="poster p-${e.id} ${big?'big':''}"><span class="p-date">${e.date}</span><span class="p-name">${e.short}</span><span class="p-venue">${e.venue} · ${e.city}</span></div>`;}
+function eventCard(e){const l=live(e.id);const min=l.length?Math.min(...l.map(x=>x.price+fee(x.price))):0;
+  return `<a class="ev-card" href="#event-${e.id}">${poster(e)}<div class="ev-info"><span class="ev-date">${e.date}</span><h3>${e.name}</h3><p>${e.date} · ${e.venue}, ${e.city}</p>
+  <div class="ev-foot"><span class="pill ${l.length?'':'muted-pill'}">${l.length?t('listed',{n:l.length}):t('waitlist')}</span>${l.length?`<span class="ev-from">${t('from')} <b>${baht(min)}</b></span>`:''}</div></div></a>`;}
+function grid(){const m=q?EVENTS.filter(x=>(x.name+' '+x.venue+' '+x.city+' '+x.artists.join(' ')).toLowerCase().includes(q.toLowerCase())):EVENTS;return m.map(eventCard).join('')||`<p class="muted">${t('empty')}</p>`;}
+
+function home(){const f=EVENTS[0];return `
+<section class="hero"><div class="wrap hero-grid">
+  <div class="hero-copy"><span class="kicker">${t('heroKicker')}</span><h1>${t('heroTitle')}</h1><p class="lead">${t('heroSub')}</p>
+    <div class="hero-search"><input id="q" placeholder="${t('search')}" value="${esc(q)}" aria-label="${t('search')}"><button class="btn primary" onclick="document.getElementById('events').scrollIntoView()">${t('ctaBuy')}</button></div>
+    <ul class="trust"><li>${t('t1')}</li><li>${t('t2')}</li><li>${t('t3')}</li></ul></div>
+  <div class="hero-aside"><a href="#event-${f.id}" class="feature">${poster(f,true)}<div class="feature-meta"><b>${f.name}</b><span>${t('listed',{n:live(f.id).length})}</span></div></a></div>
+</div></section>
+<section class="section" id="events"><div class="wrap"><div class="sec-head"><h2>${t('upcoming')}</h2></div><div class="events-grid" id="grid">${grid()}</div></div></section>
+<section class="section how" id="how"><div class="wrap"><div class="sec-head"><h2>${t('howTitle')}</h2></div>
+  <div class="how-grid">${['buyers','sellers'].map((k,j)=>`<div class="how-col"><h3>${t(k)}</h3><ol>${[1,2,3].map(i=>`<li><b>${i}</b><span>${t((j?'hs':'hb')+i)}</span></li>`).join('')}</ol></div>`).join('')}</div>
+</div></section>
+<section class="band"><div class="wrap band-row"><div class="band-ico">🛡</div><div><h2>${t('gTitle')}</h2><p>${t('gBody')}</p></div></div></section>
+<section class="section venues" id="venues"><div class="wrap venues-grid"><div><span class="kicker">${t('venuesKicker')}</span><h2>${t('venuesTitle')}</h2><p class="lead">${t('venuesBody')}</p><button class="btn line" onclick="toast('LINE: @secondentry')">${t('venuesCta')}</button></div>
+  <div class="stat-stack"><div class="stat"><b>${baht(0)}</b><span>${t('never')}</span></div><div class="stat"><b>24/7</b><span>LINE</span></div><div class="stat"><b>TH · EN</b><span>${t('navEvents')}</span></div></div></div></section>
+<section class="section faq"><div class="wrap narrow"><div class="sec-head"><h2>${t('faqTitle')}</h2></div>${[1,2,3,4].map(i=>`<details><summary>${t('q'+i)}</summary><p>${t('a'+i)}</p></details>`).join('')}</div></section>`;}
+
+function eventPage(id){const e=ev(id);if(!e)return home();const l=live(id);return `
+<section class="ev-hero"><div class="wrap"><a class="back" href="#home">← ${t('back')}</a>
+  <div class="ev-hero-grid">${poster(e,true)}<div class="ev-head"><span class="kicker">${e.date} · ${e.venue}, ${e.city}</span><h1>${e.name}</h1><p class="lead">${e.sub} · ${e.artists.join(', ')}</p>
+  <div class="avail"><span class="dot"></span>${t('available',{n:l.length})}</div>
+  <div class="guarantee"><span>🛡</span><div><b>${t('gTitle')}</b><p>${t('gBody')}</p></div></div>
+  <p class="transfer"><b>${t('transfer')}:</b> ${e.transfer[S.lang]}</p></div></div></div></section>
+<section class="section tight"><div class="wrap"><div class="listings">${l.length?l.map(row).join(''):`<div class="empty"><p>${t('none')}</p><button class="btn primary" onclick="alertMe('${id}')">🔔 ${t('alert')}</button></div>`}</div>
+${l.length?`<button class="alert-link" onclick="alertMe('${id}')">🔔 ${t('alert')}</button>`:''}</div></section>`;}
+function row(l){const f=fee(l.price);return `<article class="row-card" onclick="openListing(${l.id})" tabindex="0">
+  <div class="rc-type"><b>${l.type}</b><span class="badge">${t('never')}</span></div>
+  <div class="rc-seller"><span class="avatar">${l.seller[0]}</span><span>${l.seller}<small>✔ ${t('verified')} · ${t('swaps',{n:l.swaps})} · ★ ${l.rating}</small></span></div>
+  <div class="rc-price"><b>${baht(l.price+f)}</b><small>${t('incl',{fee:f})}</small></div>
+  <button class="btn primary sm">${t('buy')}</button></article>`;}
+function openListing(id){const l=S.LISTINGS.find(x=>x.id===id),e=ev(l.ev),f=fee(l.price);openModal(`
+  <span class="badge">${t('never')}</span><h2>${l.type}</h2><p class="muted">${e.name} · ${e.date}</p>
+  <h4>${t('details')}</h4><dl class="kv"><dt>${t('face')}</dt><dd>${baht(l.face)}</dd><dt>${t('tPrice')}</dt><dd>${baht(l.price)}</dd><dt>${t('fee')}</dt><dd>${baht(f)}</dd><dt>${t('transfer')}</dt><dd>${e.transfer[S.lang]}</dd></dl>
+  <div class="rc-seller big"><span class="avatar">${l.seller[0]}</span><span>${l.seller}<small>✔ ${t('verified')} · ${t('swaps',{n:l.swaps})} · ★ ${l.rating}</small></span></div>
+  <h4>${t('reviews')}</h4>${REVIEWS[S.lang].map(r=>`<blockquote>${r}</blockquote>`).join('')}
+  <button class="btn primary wide" onclick="checkout(${l.id})">${t('buy')} · ${baht(l.price+f)}</button>`);}
+function qr(){let s='';for(let i=0;i<121;i++){const r=Math.floor(i/11),c=i%11;const k=(r<3&&c<3)||(r<3&&c>7)||(r>7&&c<3)||((i*7+r*3+c)%3===0);s+=`<i class="${k?'k':''}"></i>`;}return `<div class="qr-grid">${s}</div>`;}
+function checkout(id,m='pp'){const l=S.LISTINGS.find(x=>x.id===id),f=fee(l.price);openModal(`
+  <h2>${t('checkout')}</h2><dl class="kv"><dt>${t('tPrice')}</dt><dd>${baht(l.price)}</dd><dt>${t('fee')}</dt><dd>${baht(f)}</dd><dt class="tot">${t('total')}</dt><dd class="tot">${baht(l.price+f)}</dd></dl>
+  <div class="seg"><button class="${m==='pp'?'on':''}" onclick="checkout(${id},'pp')">${t('pp')}</button><button class="${m==='card'?'on':''}" onclick="checkout(${id},'card')">${t('card')}</button></div>
+  ${m==='pp'?`<div class="qr">${qr()}<small>${t('scan')}</small></div>`:`<div class="cardpay"><div class="fake-input">•••• •••• •••• 4242</div><div class="apple"> Pay</div></div>`}
+  <p class="escrow">🛡 ${t('escrow')}</p><button class="btn primary wide" onclick="pay(${id})">${t('simulate')}</button>`);}
+function pay(id){const l=S.LISTINGS.find(x=>x.id===id);S.LISTINGS=S.LISTINGS.filter(x=>x.id!==id);S.mine.unshift({...l,secs:7200,state:'held'});S.HELD.unshift({id:300+id,buyer:'You',seller:l.seller,ev:l.ev,amount:l.price+fee(l.price)});log('aPay',`${ev(l.ev).name} · ${l.type} · ${baht(l.price+fee(l.price))}`);closeModal();toast(t('paid'));location.hash='#tickets';}
+const fmt=s=>`${Math.floor(s/3600)}:${String(Math.floor(s%3600/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function tickets(){return `<section class="section"><div class="wrap narrow"><h1 class="page-title">${t('navMine')}</h1>${S.mine.length?S.mine.map((m,i)=>{const e=ev(m.ev);return `<article class="ticket">
+  <div class="tk-main"><span class="kicker">${t('yourTicket')}</span><h2>${e.name}</h2><p class="muted">${m.type} · ${e.date} · ${e.venue}</p>
+  ${m.state==='held'?`<h4>${t('confirm')}</h4><p>${t('auto',{t:`<b id="cd${i}">${fmt(m.secs)}</b>`})}</p><div class="btn-row"><button class="btn primary" onclick="res(${i},'ok')">${t('worked')}</button><button class="btn ghost" onclick="res(${i},'bad')">${t('problem')}</button></div>`:`<p class="resolved">${m.state==='ok'?t('workedMsg'):t('problemMsg')}</p>`}</div>
+  <div class="tk-qr">${qr()}<span class="pill">${m.state==='held'?t('paid'):m.state==='ok'?t('stPaid'):t('problem')}</span></div></article>`;}).join(''):`<div class="empty"><p>${t('noMine')}</p><a class="btn primary" href="#home">${t('ctaBuy')}</a></div>`}</div></section>`;}
+function res(i,s){const m=S.mine[i];m.state=s;if(s==='ok')S.HELD=S.HELD.filter(h=>!(h.buyer==='You'&&h.seller===m.seller));log(s==='ok'?'aOk':'aFail',`${ev(m.ev).name} · ${m.type}`);route();}
+setInterval(()=>S.mine.forEach((m,i)=>{if(m.state==='held'){m.secs=Math.max(0,m.secs-1);const el=document.getElementById('cd'+i);if(el)el.textContent=fmt(m.secs);}}),1000);
+
+function sellPage(){const e=ev(sell.ev),lim=e.cap,p=Number(sell.price)||0,over=p>lim,f=p?fee(p):0,st=['stReview','stLive','stSold','stPaid'];
+return `<section class="section"><div class="wrap sell-grid"><div><h1 class="page-title">${t('sellTitle')}</h1>
+<ol class="steps">
+ <li><b>1</b><div><h3>${t('s1')}</h3><select id="sEv">${EVENTS.filter(x=>x.cap).map(x=>`<option value="${x.id}" ${x.id===sell.ev?'selected':''}>${x.name} · ${x.date}</option>`).join('')}</select></div></li>
+ <li><b>2</b><div><h3>${t('s2')}</h3><button class="upload ${sell.file?'done':''}" id="sFile">${sell.file?'✔ ticket.pdf':'⬆ '+t('upHint')}</button></div></li>
+ <li><b>3</b><div><h3>${t('s3')}</h3><div class="price-in"><span>฿</span><input id="sPrice" inputmode="numeric" value="${sell.price}" placeholder="${lim}" aria-label="${t('s3')}"></div>
+  <small class="${over?'err':''}">${over?t('tooHigh'):t('max',{max:lim.toLocaleString('en-US')})}</small>
+  <label class="check"><input type="checkbox" id="sId" ${sell.id?'checked':''}> ${t('id')}</label></div></li></ol></div>
+<aside class="summary"><h3>${t('summary')}</h3>${poster(e)}<dl class="kv"><dt>${t('tPrice')}</dt><dd>${p&&!over?baht(p):'—'}</dd><dt>${t('fee')}</dt><dd>${p&&!over?'−'+baht(f):'—'}</dd><dt class="tot">${t('youGet')}</dt><dd class="tot">${p&&!over?baht(p-f):'—'}</dd></dl>
+<p class="muted small">💸 ${t('hs3')}</p><button class="btn primary wide" id="sGo" ${sell.status!==null?'disabled':''}>${t('list')}</button>
+${sell.status!==null?`<ul class="status">${st.map((s,i)=>`<li class="${i<=sell.status?'on':''}"><span></span>${t(s)}</li>`).join('')}</ul>`:''}</aside></div></section>`;}
+function bindSell(){const lim=ev(sell.ev).cap;
+ $('#sEv').onchange=e=>{sell.ev=e.target.value;route();};
+ $('#sFile').onclick=()=>{sell.file=true;route();};
+ $('#sPrice').oninput=e=>{sell.price=e.target.value.replace(/\D/g,'');const pos=e.target.selectionStart;route();const n=$('#sPrice');n.focus();n.setSelectionRange(pos,pos);};
+ $('#sId').onchange=e=>{sell.id=e.target.checked;};
+ $('#sGo').onclick=()=>{const p=Number(sell.price);if(!sell.file||!p||p>lim||!sell.id){toast(t('needAll'));return;}
+  sell.status=0;log('aSubmit',`${ev(sell.ev).name} · ${baht(p)}`);route();
+  [1,2,3].forEach(i=>setTimeout(()=>{sell.status=i;if(i===2)toast(t('soldToast'));if(location.hash==='#sell')route();},i*2200));};}
+
+function team(){return `<section class="section"><div class="wrap narrow"><h1 class="page-title">${t('team')}</h1>
+<h4>${t('pending')} (${S.PENDING.length})</h4>${S.PENDING.length?S.PENDING.map(p=>`<div class="trow"><div><b>${p.seller}</b><small>${ev(p.ev).name} · ${p.type} · ${baht(p.price)}</small></div><div class="btn-row"><button class="btn primary sm" onclick="approve(${p.id})">${t('approve')}</button><button class="btn ghost sm" onclick="banP(${p.id})">${t('ban')}</button></div></div>`).join(''):`<p class="muted">${t('empty')}</p>`}
+<h4>${t('held')} (${S.HELD.length})</h4>${S.HELD.length?S.HELD.map(h=>`<div class="trow"><div><b>${baht(h.amount)}</b><small>${h.buyer} → ${h.seller} · ${ev(h.ev).name}</small></div><div class="btn-row"><button class="btn primary sm" onclick="rel(${h.id},'aRelease')">${t('release')}</button><button class="btn ghost sm" onclick="rel(${h.id},'refund')">${t('refund')}</button></div></div>`).join(''):`<p class="muted">${t('empty')}</p>`}
+<h4>${t('banned')} (${S.BANNED.length})</h4>${S.BANNED.length?S.BANNED.map(b=>`<span class="pill">${b}</span>`).join(' '):`<p class="muted">${t('empty')}</p>`}</div></section>`;}
+function approve(id){const p=S.PENDING.find(x=>x.id===id);S.PENDING=S.PENDING.filter(x=>x.id!==id);S.LISTINGS.push({id:900+id,ev:p.ev,type:p.type,face:p.price,price:p.price,seller:p.seller,swaps:1,rating:5.0});log('aApprove',`${p.seller} · ${ev(p.ev).name}`);route();}
+function banP(id){const p=S.PENDING.find(x=>x.id===id);S.PENDING=S.PENDING.filter(x=>x.id!==id);S.BANNED.push(p.seller);log('aBan',p.seller);route();}
+function rel(id,kind){const h=S.HELD.find(x=>x.id===id);S.HELD=S.HELD.filter(x=>x.id!==id);log(kind==='refund'?'aFail':'aRelease',`${h.seller} · ${baht(h.amount)}`);route();}
+
+function pilot(){const A=S.activity,c=k=>A.filter(a=>a.type===k).length,buys=c('aPay');
+ const counters=[['cSub',c('aSubmit')],['cSales',c('aOk')],['cFail',c('aFail')],['cRepeat',buys>1?1:0]];
+ const chans=['LINE','White Party','EDC','Wonderfruit','Clutch','Hostel','Email'];
+ return `<section class="section"><div class="wrap"><h1 class="page-title">${t('pilotTitle')}</h1>
+ <div class="counters">${counters.map(([k,v])=>`<div class="counter"><b>${v}</b><span>${t(k)}</span></div>`).join('')}</div>
+ <div class="pilot-grid">
+  <div class="pcard"><h3>${t('recruitT')}</h3><p>${t('recruitB')}</p></div>
+  <div class="pcard"><h3>${t('outreachT')}</h3><p class="draft">${t('outreachB')}</p><button class="btn ghost sm" onclick="copyText(t('outreachB'),this)">${t('copy')}</button></div>
+  <div class="pcard"><h3>${t('testT')}</h3><p>${t('testB')}</p></div>
+ </div>
+ <div class="pilot-grid two">
+  <form class="pcard" id="fbForm"><h3>${t('feedback')}</h3><label class="lbl">${t('channel')}<select id="fbCh">${chans.map(c=>`<option>${c}</option>`).join('')}</select></label>
+   <textarea id="fbTx" rows="4" placeholder="…"></textarea><button class="btn primary" type="submit">${t('logFb')}</button>
+   <h4>${t('fbLog')} (${S.feedback.length})</h4>${S.feedback.map(f=>`<div class="logrow"><b>${esc(f.channel)}</b> ${esc(f.text)}<small>${new Date(f.ts).toLocaleString()}</small></div>`).join('')||`<p class="muted">${t('empty')}</p>`}</form>
+  <div class="pcard"><h3>${t('actLog')} (${A.length})</h3>${A.length?A.slice(0,30).map(a=>`<div class="logrow"><b>${t(a.type)}</b> ${esc(a.detail)}<small>${new Date(a.ts).toLocaleString()}</small></div>`).join(''):`<p class="muted">${t('noAct')}</p>`}
+   <button class="btn ghost sm" onclick="copyText(JSON.stringify({activity:S.activity,feedback:S.feedback},null,2),this)">${t('exportBtn')}</button></div>
+ </div></div></section>`;}
+function bindPilot(){$('#fbForm').onsubmit=e=>{e.preventDefault();const tx=$('#fbTx').value.trim();if(!tx)return;S.feedback.unshift({ts:new Date().toISOString(),channel:$('#fbCh').value,text:tx});save();route();};}
+async function copyText(s,btn){try{await navigator.clipboard.writeText(s);btn.textContent=t('copied');}catch(e){toast(s.slice(0,140));}}
+
+function route(){const h=(location.hash||'#home').slice(1);const pg=$('#page');let anchor=null;
+ if(h.startsWith('event-')) pg.innerHTML=eventPage(h.slice(6));
+ else if(h==='sell'){pg.innerHTML=sellPage();bindSell();}
+ else if(h==='tickets') pg.innerHTML=tickets();
+ else if(h==='team') pg.innerHTML=team();
+ else if(h==='pilot'){pg.innerHTML=pilot();bindPilot();}
+ else {pg.innerHTML=home();if(h==='how'||h==='venues')anchor=h;$('#q').oninput=e=>{q=e.target.value;$('#grid').innerHTML=grid();};}
+ document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h||(h==='home'&&a.getAttribute('href')==='#home')));
+ document.body.dataset.route=h.split('-')[0];save();
+ if(anchor){const el=document.getElementById(anchor);if(el)el.scrollIntoView();}}
+window.addEventListener('hashchange',()=>{route();if(!['#how','#venues'].includes(location.hash))window.scrollTo(0,0);});
+statics();route();
+</script></body></html>
