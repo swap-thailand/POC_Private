@@ -19,7 +19,7 @@ function load() {
   try {
     const raw = localStorage.getItem(KEY);
     const parsed = raw ? JSON.parse(raw) : null;
-    if (parsed && parsed.version === 3) return parsed;
+    if (parsed && parsed.version === 5) return parsed; // bump with seed.js when the data shape or pricing changes
   } catch { /* storage unavailable or corrupt */ }
   return seed();
 }
@@ -131,6 +131,8 @@ function eventView(ev) {
     liveCount: live.length,
     minTotal: live.length ? Math.min(...live.map(l => l.total)) : null,
     waitlistCount: S.waitlist.filter(w => w.eventId === ev.id).length,
+    interestedCount: (ev.interestBase || 0) + (S.interests || []).filter(i => i.eventId === ev.id).length,
+    youInterested: !!S.currentUserId && (S.interests || []).some(i => i.eventId === ev.id && i.userId === S.currentUserId),
   };
 }
 function orderView(o) {
@@ -197,6 +199,20 @@ export const mockAdapter = {
     return ok({ event: eventView(ev), listings: eventOver(ev) ? [] : liveListings(id).map(listingView) });
   },
   async trackView(eventId) { track('act_view', eventId); save(); },
+
+  // Interested: one tap to show you plan to go (like RA's attending count). Toggles on and off.
+  async toggleInterest(eventId) {
+    const u = requireUser();
+    const ev = event(eventId);
+    if (!ev || !ev.published) throw new ServiceError('invalid');
+    S.interests = S.interests || [];
+    const i = S.interests.findIndex(x => x.eventId === eventId && x.userId === u.id);
+    if (i >= 0) S.interests.splice(i, 1);
+    else { S.interests.unshift({ eventId, userId: u.id, at: nowIso() }); track('act_interest', ev.name); }
+    save();
+    const view = eventView(ev);
+    return { interested: view.youInterested, count: view.interestedCount };
+  },
 
   // Seller
   async submitListing({ eventId, ticketTypeId, price, file }) {

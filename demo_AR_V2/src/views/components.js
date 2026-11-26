@@ -51,6 +51,15 @@ export function fileDrop(id, label, meta, accept = 'application/pdf,image/jpeg,i
     <span class="fd-text">${meta ? '✔ ' + esc(meta.name) : '⬆ ' + esc(label)}</span></label>`;
 }
 
+// Heart for the Interested button and counts: outline when off, filled when on.
+export const heart = on => `<svg class="heart" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.2-9.3C1.6 7.8 3.9 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.4 0 5.7 3.3 4.5 6.7-1.7 4.7-9.2 9.3-9.2 9.3z" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
+
+// Badge showing where a listing sits against face value: "Face value" or "+9% over face".
+export function markupBadge(price, face) {
+  const m = face ? Math.round((price / face - 1) * 100) : 0;
+  return `<span class="badge ${m > 0 ? 'badge-up' : ''}">${m > 0 ? t('overFace', { p: m }) : t('atFace')}</span>`;
+}
+
 export function priceLines({ price, buyerFee, total }) {
   return `<dl class="kv"><dt>${t('listedPrice')}</dt><dd>${baht(price)}</dd>
     <dt>${t('protectionFee')}</dt><dd>${buyerFee ? baht(buyerFee) : t('noFee')}</dd>

@@ -31,7 +31,7 @@ export function createSupabaseAdapter(config) {
       id: row.id, name: row.name, posterTitle: row.poster_title, subtitle: row.subtitle || '',
       startsAt: row.starts_at, venue: row.venue, city: row.city, artists: row.artists || [],
       transfer: { en: row.transfer_en || '', th: row.transfer_th || '' },
-      strictFaceValue: false, published: true,
+      strictFaceValue: false, published: true, interestedCount: 0, youInterested: false,
       ticketTypes: [{ id: `${row.id}:default`, eventId: row.id, name: { en: 'Ticket', th: 'ตั๋ว' }, faceValue: row.face_value_thb }],
       liveCount: live.length,
       minTotal: null,
@@ -120,6 +120,7 @@ export function createSupabaseAdapter(config) {
     confirmEntry: notConnected,
     reportProblem: notConnected,
     joinWaitlist: notConnected,
+    toggleInterest: notConnected, // needs the event_interests table in BACKEND_CONTRACT.md
     submitPartnerLead: notConnected,
 
     adminData: notConnected,

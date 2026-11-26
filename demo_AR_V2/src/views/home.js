@@ -1,11 +1,13 @@
+import { settings } from '../config/settings.js';
 import { t, getLang } from '../i18n/index.js';
-import { esc, baht, eventDate } from '../lib/format.js';
-import { poster } from './components.js';
+import { esc, baht, eventDate, num } from '../lib/format.js';
+import { poster, heart } from './components.js';
 
 export function eventCard(ev) {
   return `<a class="ev-card" href="#event-${esc(ev.id)}">${poster(ev)}
     <div class="ev-info"><span class="ev-date">${esc(eventDate(ev.startsAt, getLang()))}</span><h3>${esc(ev.name)}</h3>
     <p>${esc(ev.venue)}, ${esc(ev.city)}</p>
+    ${ev.interestedCount ? `<p class="ev-int">${heart(ev.youInterested)} ${t('interestedN', { n: num(ev.interestedCount) })}</p>` : ''}
     <div class="ev-foot"><span class="pill ${ev.liveCount ? '' : 'muted-pill'}">${ev.liveCount ? t('listed', { n: ev.liveCount }) : t('waitlistOpen')}</span>
     ${ev.minTotal ? `<span class="ev-from">${t('from')} <b>${baht(ev.minTotal)}</b></span>` : ''}</div></div></a>`;
 }
@@ -37,6 +39,6 @@ export async function homeView({ api, state }) {
 <section class="band"><div class="wrap band-row"><div class="band-ico">🛡</div><div><h2>${t('gTitle')}</h2><p>${t('gBody')}</p></div></div></section>
 <section class="section venues" id="venues"><div class="wrap venues-grid"><div><span class="kicker">${t('venuesKicker')}</span><h2>${t('venuesTitle')}</h2><p class="lead">${t('venuesBody')}</p>
   <div class="btn-row"><a class="btn primary" href="#partners">${t('venuesMore')}</a><button class="btn line" data-action="lineToast">${t('venuesCta')}</button></div></div>
-  <div class="stat-stack"><div class="stat"><b>${baht(0)}</b><span>${t('never')}</span></div><div class="stat"><b>24/7</b><span>LINE</span></div><div class="stat"><b>TH · EN</b><span>${t('navEvents')}</span></div></div></div></section>
+  <div class="stat-stack"><div class="stat"><b>${Math.round(settings.pricing.maxMarkup * 100)}%</b><span>${t('capStat')}</span></div><div class="stat"><b>24/7</b><span>LINE</span></div><div class="stat"><b>TH · EN</b><span>${t('navEvents')}</span></div></div></div></section>
 <section class="section faq"><div class="wrap narrow"><div class="sec-head"><h2>${t('faqTitle')}</h2></div>${[1, 2, 3, 4].map(i => `<details><summary>${t('q' + i)}</summary><p>${t('a' + i)}</p></details>`).join('')}</div></section>`;
 }

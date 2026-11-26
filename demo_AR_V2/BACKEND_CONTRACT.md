@@ -13,8 +13,8 @@ Every money value is an integer number of THB.
 
 These are enforced in the mock and must also be enforced server-side, since the browser can't be trusted.
 
-1. **Price cap.** `price <= face value` of the ticket type. On a strict event (`strict_face_value = true`) the buyer's total must also stay at or under face value: the max price is the largest `p` with `p + buyerFee(p) <= face`.
-2. **Fees** (`settings.feeRule`): 30 THB up to 1,000 THB, otherwise 3% rounded, capped at 100 THB. Buyer pays the fee on top; the seller pays nothing (configurable).
+1. **Price cap** (`settings.pricing.maxMarkup`, 0.2). `price <= floor(face value × 1.2)` of the ticket type, so sellers can ask up to 20% over face (TicketSwap-style). On a strict event (`strict_face_value = true`) the buyer's total must stay at or under face value: the max price is the largest `p` with `p + buyerFee(p) <= face`. **Changed 26 Nov:** the v1 migration's check (`price_thb <= face_value_thb`) needs updating to the 120% cap.
+2. **Fees** (`settings.pricing`, scenario 8 in the financial model): buyer pays 10% of the listed price on top (payment costs included, no card surcharge); seller pays 5%, taken from the payout. Both rounded to whole baht. `payout = price - sellerFee`, `total = price + buyerFee`. Store both fees on the order so later fee changes don't rewrite history.
 3. **One active order per listing.** Active = reserved, payment_submitted, paid, transferred, confirmed, disputed.
 4. **Hold expiry.** A reserved order expires 10 minutes after creation; the listing goes back to approved. Needs a scheduled job (pg_cron or an edge function) rather than the mock's on-read sweep.
 5. **Auto-confirm.** A transferred order auto-confirms at the later of `event.starts_at + 4 hours` and `transferred_at + 2 hours`. Never before the event starts, and never less than 2 hours after a late transfer.
@@ -59,6 +59,7 @@ Suggested additions (names are suggestions, shapes match the mock):
 | `disputes (order_id, reason, note, evidence_path, created_at, resolved_at, resolution)` | Report a problem |
 | `listings.reject_reason` (or use `ticket_verifications.notes`) | Rejection reason shown to seller |
 | `waitlist (id, event_id, user_id null, channel 'line'|'email', contact, consent, created_at, notified_at)` | Alert me |
+| `event_interests (event_id, user_id, created_at)`, primary key `(event_id, user_id)`; public count per event (a view or RPC), users read and delete only their own rows | Interested button and counts |
 | `audit_log (id, at, actor_id, action, target, detail)` | Review desk audit |
 | `partner_leads (id, first_name, last_name, email, contact, company, roles text[], city, volume, ticketing, message, consent, created_at)`, insert-only for anon, read for admins | Partner with us form |
 | `activity (at, type, detail, user_id null)` and `feedback (at, channel, text)` | Pilot dashboard |
@@ -101,6 +102,7 @@ Shapes are abbreviated; see `mockAdapter.js` (`listingView`, `eventView`, `order
 | `confirmEntry(orderId)` | transferred → confirmed |
 | `reportProblem(orderId, {reason, note, file})` | From paid, transferred or confirmed (before payout). Freezes payout |
 | `joinWaitlist(eventId, {channel, contact, consent})` | Consent required |
+| `toggleInterest(eventId)` | Signed-in only. Inserts or deletes the user's row, returns `{interested, count}`. `listEvents`/`getEvent` also return `interestedCount` and `youInterested` per event. Not connected yet |
 | `submitPartnerLead({firstName, lastName, email, contact, company, roles[], city, volume, ticketing, message, consent})` | Public form. Consent, name, email and company required. Rate-limit it |
 
 ### Admin (all require the admin role)

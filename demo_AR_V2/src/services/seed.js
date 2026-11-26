@@ -31,27 +31,27 @@ export function seed(now = Date.now()) {
 
   const events = [
     {
-      id: 'wp', name: 'White Party Bangkok', posterTitle: 'WHITE PARTY', subtitle: 'Main Event · NYE',
+      id: 'wp', interestBase: 1240, name: 'White Party Bangkok', posterTitle: 'WHITE PARTY', subtitle: 'Main Event · NYE',
       startsAt: '2026-12-30T20:00:00+07:00', venue: 'Paragon Hall, Siam Paragon', city: 'Bangkok',
-      artists: ['Joe Gauthreaux', 'Enrico Meloni'], strictFaceValue: true, published: true,
+      artists: ['Joe Gauthreaux', 'Enrico Meloni'], strictFaceValue: false, published: true,
       transfer: { en: 'Name change in pre-registration (allowed once). Collect the wristband with matching ID.', th: 'เปลี่ยนชื่อตอนลงทะเบียนล่วงหน้า (ได้ครั้งเดียว) รับริสต์แบนด์ด้วยบัตรประชาชนที่ชื่อตรงกัน' },
     },
     {
-      id: 'clutch', name: 'Clutch Fridays', posterTitle: 'CLUTCH', subtitle: 'House & disco',
+      id: 'clutch', interestBase: 86, name: 'Clutch Fridays', posterTitle: 'CLUTCH', subtitle: 'House & disco',
       startsAt: nextFriday22(now), venue: 'Clutch', city: 'Bangkok',
       artists: ['Resident DJs'], strictFaceValue: false, published: true, weekly: true,
       transfer: { en: 'QR e-ticket reissued to the buyer by the seller.', th: 'ผู้ขายออกอีทิกเก็ต QR ใหม่ในชื่อผู้ซื้อ' },
     },
     {
-      id: 'edc', name: 'EDC Thailand', posterTitle: 'EDC', subtitle: '3-day festival',
+      id: 'edc', interestBase: 2310, name: 'EDC Thailand', posterTitle: 'EDC', subtitle: '3-day festival',
       startsAt: '2026-12-18T15:00:00+07:00', venue: 'Rhythm Park', city: 'Phuket',
       artists: ['Under the Electric Sky'], strictFaceValue: false, published: true,
       transfer: { en: 'Unworn delivered wristband, handed over in person.', th: 'ริสต์แบนด์ที่ยังไม่ได้ใส่ ส่งมอบตัวต่อตัว' },
     },
     {
-      id: 's2o', name: 'S2O Songkran', posterTitle: 'S2O', subtitle: 'Water music festival',
+      id: 's2o', interestBase: 640, name: 'S2O Songkran', posterTitle: 'S2O', subtitle: 'Water music festival',
       startsAt: '2027-04-13T16:00:00+07:00', venue: 'TBA', city: 'Bangkok',
-      artists: ['Lineup TBA'], strictFaceValue: false, published: true,
+      artists: ['Lineup TBA'], strictFaceValue: true, published: true,
       transfer: { en: 'To be announced.', th: 'ยังไม่ประกาศ' },
     },
   ];
@@ -74,13 +74,13 @@ export function seed(now = Date.now()) {
   };
 
   const listings = [
-    listing('l1', 'wp_main', 'u_ploy', 2900),
-    listing('l2', 'wp_nye', 'u_nat', 3390),
-    listing('l3', 'wp_all', 'u_mike', 8000),
-    listing('l4', 'cl_drink', 'u_fah', 250),
+    listing('l1', 'wp_main', 'u_ploy', 3200),
+    listing('l2', 'wp_nye', 'u_nat', 3850),
+    listing('l3', 'wp_all', 'u_mike', 9500),
+    listing('l4', 'cl_drink', 'u_fah', 300),
     listing('l5', 'cl_entry', 'u_ploy', 250),
-    listing('l6', 'edc_ga', 'u_aom', 9200),
-    listing('l7', 'wp_main', 'u_joy', 3000, 'pending', 20),
+    listing('l6', 'edc_ga', 'u_aom', 10500),
+    listing('l7', 'wp_main', 'u_joy', 3500, 'pending', 20),
     listing('l8', 'cl_entry', 'u_fah', 250, 'reserved', 90),
     listing('l9', 'edc_ga', 'u_nat', 9590, 'sold', 300),
   ];
@@ -89,14 +89,14 @@ export function seed(now = Date.now()) {
   const orders = [
     // Sam has sent a payment slip for a Clutch ticket: shows in the admin payments queue.
     {
-      id: 'o1', listingId: 'l8', buyerId: 'u_sam', price: 250, buyerFee: 30, sellerFee: 0, total: 280, payout: 250,
+      id: 'o1', listingId: 'l8', buyerId: 'u_sam', price: 250, buyerFee: 25, sellerFee: 13, total: 275, payout: 237,
       status: 'payment_submitted', reservedUntil: iso(now + 5 * 60000), createdAt: iso(now - 8 * 60000),
       slip: { name: 'promptpay-slip.jpg', type: 'image/jpeg', size: 90000, dataUrl: null }, dispute: null,
       history: [hist('reserved', 8, 'u_sam'), hist('payment_submitted', 4, 'u_sam')],
     },
     // Mint paid for an EDC wristband: waiting for the seller to transfer.
     {
-      id: 'o2', listingId: 'l9', buyerId: 'u_mint', price: 9590, buyerFee: 100, sellerFee: 0, total: 9690, payout: 9590,
+      id: 'o2', listingId: 'l9', buyerId: 'u_mint', price: 9590, buyerFee: 959, sellerFee: 480, total: 10549, payout: 9110,
       status: 'paid', reservedUntil: iso(now - 200 * 60000), createdAt: iso(now - 240 * 60000), slip: { name: 'slip.png', type: 'image/png', size: 80000, dataUrl: null }, dispute: null,
       history: [hist('reserved', 240, 'u_mint'), hist('payment_submitted', 236, 'u_mint'), hist('paid', 200, 'u_admin')],
     },
@@ -109,9 +109,11 @@ export function seed(now = Date.now()) {
   ];
 
   return {
-    version: 3,
+    version: 5,
     currentUserId: 'u_you',
     users, events, ticketTypes, listings, orders, waitlist,
+    // Fans who tapped Interested in this browser. interestBase on each event stands in for everyone else.
+    interests: [{ eventId: 'wp', userId: 'u_mint', at: iso(now - 86400000) }],
     audit: [],
     activity: [],
     feedback: [],

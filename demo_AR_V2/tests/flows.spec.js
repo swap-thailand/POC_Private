@@ -11,6 +11,13 @@ async function go(page, hash) {
   await page.evaluate(h => { location.hash = h; }, hash);
   await page.waitForTimeout(150);
 }
+// Selling needs a verified profile (demo verification, kept in memory until reload).
+async function openSell(page, { load = false } = {}) {
+  if (load) await page.goto('/#sell'); else await go(page, '#sell');
+  const start = page.locator('[data-action=startVerification]');
+  if (await start.isVisible().catch(() => false)) await start.click();
+  await expect(page.locator('[data-input=sellEvent]')).toBeVisible();
+}
 async function adminTab(page, id) {
   await go(page, '#admin');
   await page.locator(`[data-action=adminTab][data-id=${id}]`).click();
@@ -63,7 +70,7 @@ test('full swap: hold, slip, paid, transfer, confirm, payout', async ({ page }) 
 
   await actAs(page, 'u_ploy');
   await go(page, '#listings');
-  await expect(page.locator('[data-listing=l1]')).toContainText('Paid out ฿2,900');
+  await expect(page.locator('[data-listing=l1]')).toContainText('Paid out ฿3,040'); // ฿3,200 less the 5% seller fee
 });
 
 test('dispute freezes payout and admin refunds', async ({ page }) => {
@@ -87,7 +94,7 @@ test('dispute freezes payout and admin refunds', async ({ page }) => {
 });
 
 test('new listing waits for review, admin approves it', async ({ page }) => {
-  await page.goto('/#sell');
+  await openSell(page, { load: true });
   await page.selectOption('[data-input=sellEvent]', 'edc');
   await page.locator('input[data-file=ticketFile]').setInputFiles(png);
   await page.fill('[data-input=sellPrice]', '9000');
@@ -106,7 +113,7 @@ test('new listing waits for review, admin approves it', async ({ page }) => {
 test('skip-approval test toggle puts new listings live immediately', async ({ page }) => {
   await page.goto('/#test');
   await page.locator('[data-action=toggleSetting][data-id=skipApproval]').check();
-  await go(page, '#sell');
+  await openSell(page);
   await page.selectOption('[data-input=sellEvent]', 'clutch');
   await page.locator('input[data-file=ticketFile]').setInputFiles(png);
   await page.fill('[data-input=sellPrice]', '200');
@@ -114,15 +121,72 @@ test('skip-approval test toggle puts new listings live immediately', async ({ pa
   await expect(page.locator('.listing-row').first().locator('.chip')).toHaveText('Live');
 });
 
-test('strict face-value event blocks a price above the max', async ({ page }) => {
-  await page.goto('/#sell');
-  await page.selectOption('[data-input=sellEvent]', 'wp');
-  await expect(page.locator('#sellSummary')).toContainText('max ฿3,107');
-  await page.fill('[data-input=sellPrice]', '3200');
+test('strict face-value event keeps the buyer total at face value', async ({ page }) => {
+  await openSell(page, { load: true });
+  await page.selectOption('[data-input=sellEvent]', 's2o');
+  await expect(page.locator('#sellSummary')).toContainText('max ฿2,727'); // ฿2,727 + 10% fee = ฿3,000 face
+  await page.fill('[data-input=sellPrice]', '2800');
   await expect(page.locator('#sellSummary')).toContainText("Price can't be above the maximum.");
-  await page.fill('[data-input=sellPrice]', '3107');
+  await page.fill('[data-input=sellPrice]', '2727');
   await expect(page.locator('#sellSummary')).toContainText('Buyer pays');
-  await expect(page.locator('#sellSummary')).toContainText('฿3,200');
+  await expect(page.locator('#sellSummary')).toContainText('฿3,000');
+});
+
+test('normal events allow up to 20% over face value, with TicketSwap-style fees', async ({ page }) => {
+  await openSell(page, { load: true });
+  await page.selectOption('[data-input=sellEvent]', 'wp'); // Main Event GA, face ฿3,200
+  await expect(page.locator('#sellSummary')).toContainText('Max price: ฿3,840 (20% over face value)');
+  await page.fill('[data-input=sellPrice]', '3841');
+  await expect(page.locator('#sellSummary')).toContainText("Price can't be above the maximum.");
+  await page.fill('[data-input=sellPrice]', '3520');
+  const q = page.locator('#sellSummary');
+  await expect(q).toContainText('+10% over face');
+  await expect(q).toContainText('฿3,872'); // buyer pays 3,520 + 10%
+  await expect(q).toContainText('−฿176'); // 5% seller fee
+  await expect(q).toContainText('฿3,344'); // seller receives
+  await page.goto('/#event-wp');
+  await expect(page.locator('.row-card').first()).toContainText('incl. ฿320 service fee');
+});
+
+test('about us page tells the story and the partner page no longer repeats the problem section', async ({ page }) => {
+  await page.goto('/#home');
+  const about = page.viewportSize().width > 860 ? page.locator('.nav a[href="#about"]') : page.locator('.site-foot a[href="#about"]');
+  await about.click();
+  await expect(page.locator('h1')).toHaveText('By the community, for the community.');
+  await expect(page.locator('#page')).toContainText('What nightlife in Thailand is up against');
+  await expect(page.locator('#page .pt-card')).toHaveCount(6);
+  await go(page, '#partners');
+  await expect(page.locator('#page')).not.toContainText('What nightlife in Thailand is up against');
+  const icon = await page.locator('link[rel=icon][type="image/svg+xml"]').getAttribute('href');
+  expect(icon.startsWith('data:image/svg+xml')).toBe(true);
+});
+
+test('interested: fans mark an event and the count goes up and down', async ({ page }) => {
+  await page.goto('/#event-edc');
+  const btn = page.locator('.interest-btn');
+  await expect(page.locator('.int-count')).toHaveText('2,310 people interested');
+  await btn.click();
+  await expect(page.locator('.interest-btn')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.int-count')).toHaveText('2,311 people interested');
+  await page.reload();
+  await expect(page.locator('.int-count')).toHaveText('2,311 people interested');
+  await go(page, '#home');
+  await expect(page.locator('.ev-card[href="#event-edc"] .ev-int')).toContainText('2,311 interested');
+  await go(page, '#event-edc');
+  await page.locator('.interest-btn').click();
+  await expect(page.locator('.interest-btn')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('.int-count')).toHaveText('2,310 people interested');
+});
+
+test('partner page shows the dashboard charts and pricing', async ({ page }) => {
+  await page.goto('/#partners');
+  await expect(page.locator('.pt-charts .pt-chart')).toHaveCount(4);
+  await expect(page.locator('.pt-charts .ch-col')).toHaveCount(21);
+  await expect(page.locator('.pt-pricing')).toContainText('Priced like TicketSwap, capped at 20%');
+  await expect(page.locator('.pt-pricing')).toContainText('฿4,224');
+  await page.locator('.pt-charts .ch-row').first().focus();
+  await expect(page.locator('.ch-tip')).toHaveClass(/on/);
+  await expect(page.locator('.ch-tip')).toContainText('Face value');
 });
 
 test('admin creates an order for a manually added buyer', async ({ page }) => {
@@ -164,8 +228,9 @@ test('Thai language switch and privacy consent on sign-in', async ({ page }) => 
   await expect(page.locator('#toast')).toContainText('consent');
   await page.locator('form[data-form=signIn] input[name=consent]').check();
   await page.locator('form[data-form=signIn] button[type=submit]').click();
-  await expect(page.locator('.head-user')).toHaveCount(1);
-  await page.locator('[data-action=lang]').click();
+  await go(page, '#account'); // signed in: the account page shows the profile, not the sign-in form
+  await expect(page.locator('form[data-form=signIn]')).toHaveCount(0);
+  await page.locator('.head-actions [data-action=lang]').click(); // the account page has its own language toggle too
   await expect(page.locator('html')).toHaveAttribute('lang', 'th');
   await expect(page.locator('.page-title, h1').first()).not.toHaveText(/Find your way in/);
 });
@@ -202,7 +267,7 @@ test('partner page: venue submits an enquiry and admin sees it', async ({ page }
 test('admins cannot approve their own listing', async ({ page }) => {
   await page.goto('/#test');
   await actAs(page, 'u_admin');
-  await go(page, '#sell');
+  await openSell(page);
   await page.selectOption('[data-input=sellEvent]', 'edc');
   await page.locator('input[data-file=ticketFile]').setInputFiles(png);
   await page.fill('[data-input=sellPrice]', '9000');

@@ -22,7 +22,9 @@ To run the tests with a system Chrome instead of Playwright's bundled browser, s
 | Area | Where |
 | --- | --- |
 | Live listings from the data layer, search, event pages | `views/home.js`, `views/event.js` |
-| Ticket types per event, each with its own face-value cap; strict face-value events | `services/seed.js`, `lib/fees.js` |
+| Ticket types per event; sellers can list up to 20% over face value with TicketSwap-style fees (buyer 10%, seller 5%); strict face-value events | `services/seed.js`, `lib/fees.js`, `config/settings.js` (`pricing`) |
+| Partner page dashboard: swaps over time, seller pricing, willingness to pay, buyer channels, fee breakdown (sample data) | `views/partners.js`, `views/charts.js` |
+| Header logo: animated ticket mark, `orbit` or `ring` style | `lib/logo.js`, `config/brand.js` (`logo`) |
 | Orders with a 10-minute hold and a status timeline | `views/tickets.js` |
 | Manual PromptPay: sample QR, slip upload, admin "payment received" | `views/tickets.js`, `views/admin.js` |
 | Card / Apple Pay alternative: sample hosted checkout, paid instantly with no slip check, simulated decline in test mode | `views/tickets.js` (`checkoutModal`), `settings.payments` |

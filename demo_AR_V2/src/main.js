@@ -5,6 +5,7 @@ import { brand } from './config/brand.js';
 import { settings, TEST_MODE } from './config/settings.js';
 import { t, getLang, setLang } from './i18n/index.js';
 import { esc, readFile, countdown } from './lib/format.js';
+import { logoSvg, faviconHref } from './lib/logo.js';
 import { api, initApi, ServiceError, errorKeys } from './services/index.js';
 import { homeView, eventGrid } from './views/home.js';
 import { eventView, listingModal, waitlistModal } from './views/event.js';
@@ -13,6 +14,7 @@ import { sellView, sellSummary, listingsView } from './views/sell.js';
 import { adminView, fileModal } from './views/admin.js';
 import { testView, testBadge, pilotView, accountView, privacyView } from './views/tools.js';
 import { partnersView } from './views/partners.js';
+import { aboutView } from './views/about.js';
 
 const $ = id => document.getElementById(id);
 const state = {
@@ -50,15 +52,35 @@ function route() {
   return h && h !== 'page' ? h : lastRoute || 'home';
 }
 
+// ---------- logo ----------
+// Built once and moved back into the header after each render, so its animation never restarts.
+const logoEl = document.createElement('span');
+logoEl.className = 'logo';
+logoEl.innerHTML = logoSvg(brand.logo);
+const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
+const syncLogoMotion = () => {
+  const svg = logoEl.querySelector('svg');
+  if (!svg?.pauseAnimations) return;
+  if (motionQuery.matches) { svg.pauseAnimations(); svg.setCurrentTime(0); } else svg.unpauseAnimations();
+};
+syncLogoMotion();
+motionQuery.addEventListener('change', syncLogoMotion);
+{
+  // Inline copy of public/favicon.svg, so single-file demos get the icon too.
+  const icon = document.querySelector('link[rel=icon][type="image/svg+xml"]') || document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'icon' }));
+  icon.type = 'image/svg+xml';
+  icon.href = faviconHref();
+}
+
 // ---------- shell ----------
 function header(r) {
   const on = name => (r === name || (name === 'home' && r.startsWith('event-')) ? 'on' : '');
   const links = [
-    ['home', t('navEvents'), true], ['how', t('navHow'), true], ['sell', t('navSell'), true],
-    ['tickets', t('navTickets'), true], ['listings', t('navListings'), !!user], ['admin', t('navAdmin'), isAdmin()],
+    ['home', t('navEvents'), true], ['how', t('navHow'), true], // Sell is the black button in head-actions
+    ['tickets', t('navTickets'), true], ['listings', t('navListings'), !!user], ['about', t('navAbout'), true], ['admin', t('navAdmin'), isAdmin()],
   ];
   return `<div class="wrap head-row">
-    <a class="brand" href="#home" aria-label="${esc(brand.name)}"><span class="logo">${esc(brand.logoMark)}</span><span class="word">${esc(brand.shortName)}</span></a>
+    <a class="brand" href="#home" aria-label="${esc(brand.name)}"><span class="logo"></span><span class="word">${esc(brand.shortName)}</span></a>
     <nav class="nav" aria-label="Main">${links.filter(l => l[2]).map(([id, label]) => `<a href="#${id}" class="${on(id)} ${id === 'admin' ? 'role-link' : ''}">${label}</a>`).join('')}
       <a href="#partners" class="nav-partner ${on('partners')}">${t('partnerLink')}</a></nav>
     <div class="head-actions">
@@ -70,7 +92,7 @@ function header(r) {
 }
 function footer() {
   return `<div class="wrap foot-row"><p>${t(api.mode === 'sample' ? 'footer' : 'footerConnected')}</p>
-    <div class="foot-links"><a href="#partners">${t('partnerLink')}</a><a href="#privacy">${t('privacy')}</a>${isAdmin() ? `<a href="#pilot">${t('pilot')}</a>` : ''}
+    <div class="foot-links"><a href="#about">${t('navAbout')}</a><a href="#partners">${t('partnerLink')}</a><a href="#privacy">${t('privacy')}</a>${isAdmin() ? `<a href="#pilot">${t('pilot')}</a>` : ''}
     ${testTools() ? `<a href="#test">${t('testTools')}</a><button data-action="resetDemo">${t('reset')}</button>` : ''}</div></div>`;
 }
 
@@ -80,7 +102,7 @@ async function page(r) {
   if(r==='verify')return user?verificationView():accountView(ctx);
   if (r === 'home' || r === 'how' || r === 'venues') return homeView(ctx);
   if (r.startsWith('event-')) return eventView(ctx, r.slice(6));
-  const views = { sell: sellView, tickets: ticketsView, listings: listingsView, admin: adminView, test: testView, pilot: pilotView, account: accountView, privacy: privacyView, partners: partnersView };
+  const views = { sell: sellView, tickets: ticketsView, listings: listingsView, admin: adminView, test: testView, pilot: pilotView, account: accountView, privacy: privacyView, partners: partnersView, about: aboutView };
   return (views[r] || homeView)(ctx);
 }
 
@@ -105,6 +127,7 @@ async function doRender() {
   document.title = `${brand.name} · ${brand.tagline[getLang()]}`;
   const html = await page(r);
   $('siteHead').innerHTML = header(r);
+  $('siteHead').querySelector('.logo')?.replaceWith(logoEl);
   $('siteHead').classList.toggle('nav-open', state.menuOpen);
   $('page').innerHTML = html;
   $('siteFoot').innerHTML = footer();
@@ -142,6 +165,12 @@ const actions = {
     closeModal();
     location.hash = '#tickets';
     toast(t('holdLeft', { t: countdown(api.timing().holdMs) }));
+  },
+  async toggleInterest(id) {
+    if (!user) { location.hash = '#account'; return; }
+    const r = await api.toggleInterest(id);
+    toast(r.interested ? t('interestOnToast', { n: r.count.toLocaleString('en-US') }) : t('interestOffToast'));
+    return true;
   },
   openWaitlist(id) {
     const ev = state.currentEvent?.id === id ? state.currentEvent : state.events.find(e => e.id === id);
@@ -334,6 +363,22 @@ document.addEventListener('click', e => {
   if (el.tagName === 'BUTTON' || el.getAttribute('role') === 'button') e.preventDefault();
   run(() => fn(el.dataset.id, el));
 });
+// Shared chart tooltip: any element with data-tip shows it on hover or keyboard focus.
+const tip = Object.assign(document.createElement('div'), { className: 'ch-tip', role: 'status' });
+document.body.appendChild(tip);
+const showTip = (el, x, y) => { tip.textContent = el.dataset.tip; tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.classList.add('on'); };
+document.addEventListener('pointermove', e => {
+  const el = e.target.closest?.('[data-tip]');
+  if (el) showTip(el, e.clientX, e.clientY); else tip.classList.remove('on');
+});
+document.addEventListener('focusin', e => {
+  const el = e.target.closest?.('[data-tip]');
+  if (!el) return tip.classList.remove('on');
+  const r = el.getBoundingClientRect(); showTip(el, r.left + r.width / 2, r.top);
+});
+document.addEventListener('focusout', () => tip.classList.remove('on'));
+document.addEventListener('scroll', () => tip.classList.remove('on'), { passive: true });
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
   const card = e.target.closest?.('[role=button][data-action]');

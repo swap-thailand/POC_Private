@@ -5,10 +5,12 @@ export const TEST_MODE = typeof __TEST_MODE__ !== 'undefined' && __TEST_MODE__ =
 
 export const settings = {
   currency: 'THB',
-  // Who pays the protection fee: 'standard' applies feeRule, 'none' charges nothing.
-  fees: { buyer: 'standard', seller: 'none' },
-  // 30 THB for tickets up to 1,000 THB, otherwise 3% capped at 100 THB.
-  feeRule: { flatUpTo: 1000, flat: 30, percent: 0.03, cap: 100 },
+  // Pricing follows TicketSwap's model (scenario 8 in the JingTix financial model):
+  // - sellers can list up to maxMarkup above face value (0.2 = 20%, so 120% of face);
+  // - buyers pay a service fee of buyerPercent on the listed price, payment costs included;
+  // - sellers pay sellerPercent of the listed price, taken from their payout.
+  // Events marked strictFaceValue ignore maxMarkup: the buyer's total, fee included, stays at face value.
+  pricing: { maxMarkup: 0.2, buyerPercent: 0.10, sellerPercent: 0.05, buyerMin: 0, sellerMin: 0 },
   // How long a buyer can hold a listing while paying.
   holdMinutes: 10,
   // The buyer's confirm window closes this many hours after the event starts,
@@ -20,8 +22,8 @@ export const settings = {
   hideEventAfterHours: 12,
   // How buyers can pay. PromptPay is manual (slip + admin check). Card and Apple Pay go
   // through a hosted checkout from a payment provider, so card numbers never touch our app.
-  // cardSurcharge is added to the buyer's total for card payments; 0 means we absorb the
-  // provider's processing fee out of the protection fee.
+  // cardSurcharge is added to the buyer's total for card payments; 0 because the 10% buyer
+  // fee already covers payment processing (TicketSwap-style).
   payments: { promptpay: true, card: true, cardSurcharge: { percent: 0, flat: 0 } },
   // Ticket files sellers and buyers can upload.
   upload: { types: ['application/pdf', 'image/jpeg', 'image/png'], maxBytes: 10 * 1024 * 1024 },

@@ -1,6 +1,7 @@
 export const esc = value =>
   String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+export const num = n => Number(n || 0).toLocaleString('en-US');
 export const baht = n => '฿' + Number(n || 0).toLocaleString('en-US');
 
 const locales = { en: 'en-GB', th: 'th-TH' };

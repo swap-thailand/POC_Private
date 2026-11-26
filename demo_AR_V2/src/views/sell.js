@@ -1,7 +1,8 @@
 import { t, tx, getLang } from '../i18n/index.js';
 import { quote, maxListingPrice } from '../lib/fees.js';
 import { esc, baht, eventDate } from '../lib/format.js';
-import { fileDrop, chip, typeName, narrow } from './components.js';
+import { fileDrop, chip, typeName, narrow, markupBadge } from './components.js';
+import { settings } from '../config/settings.js';
 
 // The quote box re-renders on every keystroke without touching the rest of the form.
 export function sellSummary(state) {
@@ -10,12 +11,16 @@ export function sellSummary(state) {
   if (!ev || !tt) return '';
   const max = maxListingPrice(tt.faceValue, ev.strictFaceValue);
   const price = Number(state.sell.price);
-  const hint = ev.strictFaceValue ? t('strictMax', { max: baht(max) }) : t('maxPrice', { max: baht(max) });
+  const hint = ev.strictFaceValue ? t('strictMax', { max: baht(max) }) : t('maxPriceMarkup', { max: baht(max), p: Math.round(settings.pricing.maxMarkup * 100) });
   if (!price) return `<p class="mini">${hint}</p>`;
   if (!Number.isInteger(price) || price <= 0) return `<p class="mini">${hint}</p><p class="notice warn">${t('wholeBaht')}</p>`;
   const q = quote(price, tt.faceValue, ev.strictFaceValue);
   if (!q.ok) return `<p class="mini">${hint}</p><p class="notice warn">${t('tooHigh')}</p>`;
-  return `<p class="mini">${hint}</p><dl class="kv quote"><dt>${t('buyerPays')}</dt><dd>${baht(q.total)}</dd>
+  const pct = v => Math.round(v * 100);
+  return `<p class="mini">${hint}</p><dl class="kv quote">
+    <dt>${t('listedPrice')}</dt><dd>${baht(q.price)} ${markupBadge(q.price, tt.faceValue)}</dd>
+    <dt>${t('buyerPays')}</dt><dd>${baht(q.total)} <small class="mini">${t('inclBuyerFee', { p: pct(settings.pricing.buyerPercent) })}</small></dd>
+    <dt>${t('sellerFeeLine', { p: pct(settings.pricing.sellerPercent) })}</dt><dd>−${baht(q.sellerFee)}</dd>
     <dt class="tot">${t('youGet')}</dt><dd class="tot">${baht(q.payout)}</dd></dl>`;
 }
 
