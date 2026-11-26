@@ -3,6 +3,7 @@
 
 /* global __MARKETPLACE_CONFIG__ */
 import { mockAdapter } from './mockAdapter.js';
+import { withShowcase } from './showcase.js';
 import { settings } from '../config/settings.js';
 
 const config = typeof __MARKETPLACE_CONFIG__ !== 'undefined' ? __MARKETPLACE_CONFIG__ : null;
@@ -12,7 +13,6 @@ export let api = mockAdapter;
 export async function initApi() {
   if (config) {
     const { createSupabaseAdapter } = await import('./supabaseAdapter.js');
-    const { withShowcase } = await import('./showcase.js');
     // Example events fill the site while the database has none (see showcase.js, settings.showcase).
     api = withShowcase(createSupabaseAdapter(config));
     // Until the resale-cap migration is live, the database only accepts face value: enforce the same here.
