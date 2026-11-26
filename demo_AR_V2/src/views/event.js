@@ -14,6 +14,7 @@ function listingRow(l, user) {
 
 // RA-style "Interested" button with the live count. Signed-out visitors are sent to sign in.
 function interestButton(e, user) {
+  if (!e.interestEnabled) return '';
   const count = `<span class="int-count">${t('interestPeople', { n: num(e.interestedCount) })}</span>`;
   if (!user) return `<a class="interest-btn" href="#account">${heart(false)} ${t('interestBtn')}</a>${count}`;
   return `<button class="interest-btn ${e.youInterested ? 'on' : ''}" data-action="toggleInterest" data-id="${esc(e.id)}" aria-pressed="${e.youInterested}">${heart(e.youInterested)} ${t('interestBtn')}</button>${count}`;

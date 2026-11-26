@@ -131,6 +131,7 @@ function eventView(ev) {
     liveCount: live.length,
     minTotal: live.length ? Math.min(...live.map(l => l.total)) : null,
     waitlistCount: S.waitlist.filter(w => w.eventId === ev.id).length,
+    interestEnabled: true,
     interestedCount: (ev.interestBase || 0) + (S.interests || []).filter(i => i.eventId === ev.id).length,
     youInterested: !!S.currentUserId && (S.interests || []).some(i => i.eventId === ev.id && i.userId === S.currentUserId),
   };
@@ -150,7 +151,7 @@ function orderView(o) {
 // ---------- the data service ----------
 export const mockAdapter = {
   mode: 'sample',
-  capabilities: { checkout: true, admin: true, testTools: TEST_MODE },
+  capabilities: { checkout: true, admin: true, testTools: TEST_MODE, interests: true, resaleMarkup: true },
 
   subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
   tick() { return sweep(); },

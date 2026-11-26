@@ -15,7 +15,7 @@ export function eventCard(ev) {
     <p>${esc(ev.venue)}, ${esc(ev.city)}</p>
     <div class="ev-foot"><span class="pill ${ev.liveCount ? '' : 'muted-pill'}">${ev.liveCount ? t('listed', { n: ev.liveCount }) : t('waitlistOpen')}</span>
     ${ev.minTotal ? `<span class="ev-from">${t('from')} <b>${baht(ev.minTotal)}</b></span>` : ''}
-    ${interest}</div></div></article>`;
+    ${ev.interestEnabled ? interest : ''}</div></div></article>`;
 }
 
 export function eventGrid(events, q) {
@@ -45,6 +45,6 @@ export async function homeView({ api, state }) {
 <section class="band"><div class="wrap band-row"><div class="band-ico">🛡</div><div><h2>${t('gTitle')}</h2><p>${t('gBody')}</p></div></div></section>
 <section class="section venues" id="venues"><div class="wrap venues-grid"><div><span class="kicker">${t('venuesKicker')}</span><h2>${t('venuesTitle')}</h2><p class="lead">${t('venuesBody')}</p>
   <div class="btn-row"><a class="btn primary" href="#partners">${t('venuesMore')}</a><button class="btn line" data-action="lineToast">${t('venuesCta')}</button></div></div>
-  <div class="stat-stack"><div class="stat"><b>${Math.round(settings.pricing.maxMarkup * 100)}%</b><span>${t('capStat')}</span></div><div class="stat"><b>24/7</b><span>LINE</span></div><div class="stat"><b>TH · EN</b><span>${t('navEvents')}</span></div></div></div></section>
+  <div class="stat-stack"><div class="stat"><b>${Math.round(settings.pricing.policyMarkup * 100)}%</b><span>${t('capStat')}</span></div><div class="stat"><b>24/7</b><span>LINE</span></div><div class="stat"><b>TH · EN</b><span>${t('navEvents')}</span></div></div></div></section>
 <section class="section faq"><div class="wrap narrow"><div class="sec-head"><h2>${t('faqTitle')}</h2></div>${[1, 2, 3, 4].map(i => `<details><summary>${t('q' + i)}</summary><p>${t('a' + i)}</p></details>`).join('')}</div></section>`;
 }

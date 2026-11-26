@@ -5,6 +5,10 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { ServiceError } from './errors.js';
+import { settings } from '../config/settings.js';
+
+// Features that need migration 20261126000000 stay off until settings.dbFeatures turns them on.
+const F = settings.dbFeatures || {};
 
 const notConnected = async () => { throw new ServiceError('notConnected'); };
 
@@ -31,8 +35,8 @@ export function createSupabaseAdapter(config) {
       id: row.id, name: row.name, posterTitle: row.poster_title, subtitle: row.subtitle || '',
       startsAt: row.starts_at, venue: row.venue, city: row.city, artists: row.artists || [],
       transfer: { en: row.transfer_en || '', th: row.transfer_th || '' },
-      strictFaceValue: row.strict_face_value === true, published: true,
-      interestedCount: interest.counts.get(row.id) || 0, youInterested: interest.mine.has(row.id),
+      strictFaceValue: F.resaleMarkup ? row.strict_face_value === true : false, published: true,
+      interestEnabled: !!F.interests, interestedCount: interest.counts.get(row.id) || 0, youInterested: interest.mine.has(row.id),
       ticketTypes: [{ id: `${row.id}:default`, eventId: row.id, name: { en: 'Ticket', th: 'ตั๋ว' }, faceValue: row.face_value_thb }],
       liveCount: live.length,
       minTotal: null,
@@ -43,6 +47,7 @@ export function createSupabaseAdapter(config) {
   // Interested totals (public view) plus the signed-in fan's own rows (RLS: own rows only).
   // Needs migration 20261126000000_resale_cap_and_interests.sql.
   async function interests() {
+    if (!F.interests) return { counts: new Map(), mine: new Set() };
     const [counts, mine] = await Promise.all([
       client.from('marketplace_event_interest_counts').select('event_id,interested_count'),
       sessionUser ? client.from('event_interests').select('event_id') : Promise.resolve({ data: [] }),
@@ -56,7 +61,7 @@ export function createSupabaseAdapter(config) {
   async function discover() {
     const [events, listings] = await Promise.all([
       client.from('events')
-        .select('id,name,poster_title,subtitle,starts_at,venue,city,artists,transfer_en,transfer_th,face_value_thb,strict_face_value')
+        .select('id,name,poster_title,subtitle,starts_at,venue,city,artists,transfer_en,transfer_th,face_value_thb' + (F.resaleMarkup ? ',strict_face_value' : ''))
         .gt('starts_at', new Date().toISOString()).order('starts_at').order('id'),
       client.from('marketplace_available_listings').select('id,event_id,price_thb,face_value_thb').order('id'),
     ]);
@@ -65,7 +70,7 @@ export function createSupabaseAdapter(config) {
 
   return {
     mode: 'connected',
-    capabilities: { checkout: false, admin: false, testTools: false },
+    capabilities: { checkout: false, admin: false, testTools: false, interests: !!F.interests, resaleMarkup: !!F.resaleMarkup },
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     tick() { return false; },
     timing() { return { holdMs: 10 * 60000, fastTimers: false }; },
@@ -106,6 +111,7 @@ export function createSupabaseAdapter(config) {
     async trackView() { /* analytics table not built yet */ },
 
     async toggleInterest(eventId) {
+      if (!F.interests) throw new ServiceError('notConnected');
       const user = sessionUser;
       if (!user) throw new ServiceError('notSignedIn');
       const existing = data(await client.from('event_interests').select('event_id').eq('event_id', eventId).eq('user_id', user.id));

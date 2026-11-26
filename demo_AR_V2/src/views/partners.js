@@ -81,7 +81,7 @@ function dashboardCharts() {
 
 // Where the money goes on one ticket at face value, +10% and +20%, from the live fee settings.
 function pricingSection() {
-  const face = SAMPLE.exampleFace, max = settings.pricing.maxMarkup;
+  const face = SAMPLE.exampleFace, max = settings.pricing.policyMarkup;
   const steps = [0, max / 2, max].map(m => {
     const list = Math.round(face * (1 + m)), bf = buyerFee(list), sf = sellerFee(list);
     return { m, list, buyer: list + bf, seller: list - sf, fees: bf + sf };

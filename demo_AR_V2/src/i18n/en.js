@@ -30,6 +30,7 @@ export default {
 
   // Event page
   back: 'All events', available: '{n} tickets available', never: "Face value",
+  maxPricePilot: 'Max price: {max} (face value during the pilot)',
   interestBtn: 'Interested', interestedN: '{n} interested', interestPeople: '{n} people interested',
   interestOnToast: "Saved. You're one of {n} people interested.", interestOffToast: 'Removed from your interested events.',
   atFace: 'Face value', overFace: '+{p}% over face', capStat: 'Max over face value',

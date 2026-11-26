@@ -11,7 +11,9 @@ export function sellSummary(state) {
   if (!ev || !tt) return '';
   const max = maxListingPrice(tt.faceValue, ev.strictFaceValue);
   const price = Number(state.sell.price);
-  const hint = ev.strictFaceValue ? t('strictMax', { max: baht(max) }) : t('maxPriceMarkup', { max: baht(max), p: Math.round(settings.pricing.maxMarkup * 100) });
+  const markup = Math.round(settings.pricing.maxMarkup * 100);
+  const hint = ev.strictFaceValue ? t('strictMax', { max: baht(max) })
+    : markup ? t('maxPriceMarkup', { max: baht(max), p: markup }) : t('maxPricePilot', { max: baht(max) });
   if (!price) return `<p class="mini">${hint}</p>`;
   if (!Number.isInteger(price) || price <= 0) return `<p class="mini">${hint}</p><p class="notice warn">${t('wholeBaht')}</p>`;
   const q = quote(price, tt.faceValue, ev.strictFaceValue);

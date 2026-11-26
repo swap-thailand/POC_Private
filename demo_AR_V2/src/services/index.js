@@ -3,6 +3,7 @@
 
 /* global __MARKETPLACE_CONFIG__ */
 import { mockAdapter } from './mockAdapter.js';
+import { settings } from '../config/settings.js';
 
 const config = typeof __MARKETPLACE_CONFIG__ !== 'undefined' ? __MARKETPLACE_CONFIG__ : null;
 
@@ -12,6 +13,8 @@ export async function initApi() {
   if (config) {
     const { createSupabaseAdapter } = await import('./supabaseAdapter.js');
     api = createSupabaseAdapter(config);
+    // Until the resale-cap migration is live, the database only accepts face value: enforce the same here.
+    if (!api.capabilities.resaleMarkup) settings.pricing.maxMarkup = 0;
   }
   return api;
 }

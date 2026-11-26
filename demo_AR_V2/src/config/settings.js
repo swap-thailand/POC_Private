@@ -10,7 +10,13 @@ export const settings = {
   // - buyers pay a service fee of buyerPercent on the listed price, payment costs included;
   // - sellers pay sellerPercent of the listed price, taken from their payout.
   // Events marked strictFaceValue ignore maxMarkup: the buyer's total, fee included, stays at face value.
-  pricing: { maxMarkup: 0.2, buyerPercent: 0.10, sellerPercent: 0.05, buyerMin: 0, sellerMin: 0 },
+  // policyMarkup is the advertised cap (copy, partner page); maxMarkup is what the Sell form enforces.
+  // On the live site maxMarkup drops to 0 until dbFeatures.resaleMarkup is on (see services/index.js).
+  pricing: { maxMarkup: 0.2, policyMarkup: 0.2, buyerPercent: 0.10, sellerPercent: 0.05, buyerMin: 0, sellerMin: 0 },
+  // Live-site (Supabase) switches for features that need migration
+  // supabase/migrations/20261126000000_resale_cap_and_interests.sql. Turn each on only after that
+  // migration is applied to production and verified. Sample-data demos always have both.
+  dbFeatures: { resaleMarkup: false, interests: false },
   // How long a buyer can hold a listing while paying.
   holdMinutes: 10,
   // The buyer's confirm window closes this many hours after the event starts,
