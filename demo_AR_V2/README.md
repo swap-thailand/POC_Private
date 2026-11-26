@@ -57,3 +57,12 @@ Thai copy in `src/i18n/th.js` needs a native-speaker review before anyone outsid
 ## Connecting the backend
 
 Put `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in `.env.local` (see `.env.example`). The build checks the key is a publishable/anon key and refuses a service-role key. `npm run build` fails without keys rather than quietly shipping sample data (set `DEMO_ALLOW_SAMPLE=1` to override on purpose). With keys set, `src/services/supabaseAdapter.js` is used instead of the sample data. Today it handles sign-in, events and seller submission (the same calls as v1). Every other function returns a "not connected yet" message. See [BACKEND_CONTRACT.md](./BACKEND_CONTRACT.md) for what each one needs.
+
+## Database migrations
+
+Migrations live in `supabase/migrations/` and are applied in filename order:
+
+- `20261122000000_marketplace.sql`: baseline, the schema production runs today (copied unchanged from `demo_AR_V1`).
+- `20261126000000_resale_cap_and_interests.sql`: 120% resale cap, strict face-value events, Interested (`event_interests` and `marketplace_event_interest_counts`). Backward compatible with the previous app code.
+
+`npm run test:db` applies both to a throwaway local Postgres (PGlite, never production) and checks the cap, the submit function, RLS and the Interested view. Apply migrations to production before deploying code that depends on them, after taking a backup.

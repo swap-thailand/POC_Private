@@ -25,13 +25,14 @@ export function createSupabaseAdapter(config) {
 
   // v1 schema has one face value per event, so each event becomes one ticket type here.
   // Swap this for a ticket_types table once it exists.
-  function mapEvent(row, listings) {
+  function mapEvent(row, listings, interest = { counts: new Map(), mine: new Set() }) {
     const live = listings.filter(l => l.event_id === row.id);
     return {
       id: row.id, name: row.name, posterTitle: row.poster_title, subtitle: row.subtitle || '',
       startsAt: row.starts_at, venue: row.venue, city: row.city, artists: row.artists || [],
       transfer: { en: row.transfer_en || '', th: row.transfer_th || '' },
-      strictFaceValue: false, published: true, interestedCount: 0, youInterested: false,
+      strictFaceValue: row.strict_face_value === true, published: true,
+      interestedCount: interest.counts.get(row.id) || 0, youInterested: interest.mine.has(row.id),
       ticketTypes: [{ id: `${row.id}:default`, eventId: row.id, name: { en: 'Ticket', th: 'ตั๋ว' }, faceValue: row.face_value_thb }],
       liveCount: live.length,
       minTotal: null,
@@ -39,10 +40,23 @@ export function createSupabaseAdapter(config) {
     };
   }
 
+  // Interested totals (public view) plus the signed-in fan's own rows (RLS: own rows only).
+  // Needs migration 20261126000000_resale_cap_and_interests.sql.
+  async function interests() {
+    const [counts, mine] = await Promise.all([
+      client.from('marketplace_event_interest_counts').select('event_id,interested_count'),
+      sessionUser ? client.from('event_interests').select('event_id') : Promise.resolve({ data: [] }),
+    ]);
+    return {
+      counts: new Map(data(counts).map(r => [r.event_id, r.interested_count])),
+      mine: new Set(data(mine).map(r => r.event_id)),
+    };
+  }
+
   async function discover() {
     const [events, listings] = await Promise.all([
       client.from('events')
-        .select('id,name,poster_title,subtitle,starts_at,venue,city,artists,transfer_en,transfer_th,face_value_thb')
+        .select('id,name,poster_title,subtitle,starts_at,venue,city,artists,transfer_en,transfer_th,face_value_thb,strict_face_value')
         .gt('starts_at', new Date().toISOString()).order('starts_at').order('id'),
       client.from('marketplace_available_listings').select('id,event_id,price_thb,face_value_thb').order('id'),
     ]);
@@ -72,14 +86,14 @@ export function createSupabaseAdapter(config) {
     deleteAccount: notConnected,
 
     async listEvents() {
-      const { events, listings } = await discover();
-      return events.map(e => mapEvent(e, listings));
+      const [{ events, listings }, interest] = await Promise.all([discover(), interests()]);
+      return events.map(e => mapEvent(e, listings, interest));
     },
     async getEvent(id) {
-      const { events, listings } = await discover();
+      const [{ events, listings }, interest] = await Promise.all([discover(), interests()]);
       const row = events.find(e => e.id === id);
       if (!row) return null;
-      const ev = mapEvent(row, listings);
+      const ev = mapEvent(row, listings, interest);
       return {
         event: ev,
         listings: listings.filter(l => l.event_id === id).map(l => ({
@@ -90,6 +104,16 @@ export function createSupabaseAdapter(config) {
       };
     },
     async trackView() { /* analytics table not built yet */ },
+
+    async toggleInterest(eventId) {
+      const user = sessionUser;
+      if (!user) throw new ServiceError('notSignedIn');
+      const existing = data(await client.from('event_interests').select('event_id').eq('event_id', eventId).eq('user_id', user.id));
+      if (existing.length) data(await client.from('event_interests').delete().eq('event_id', eventId).eq('user_id', user.id));
+      else data(await client.from('event_interests').insert({ event_id: eventId, user_id: user.id }));
+      const row = data(await client.from('marketplace_event_interest_counts').select('interested_count').eq('event_id', eventId));
+      return { interested: !existing.length, count: row[0]?.interested_count || 0 };
+    },
 
     async submitListing({ eventId, price, file, fileBlob }) {
       const user = sessionUser;
@@ -120,7 +144,7 @@ export function createSupabaseAdapter(config) {
     confirmEntry: notConnected,
     reportProblem: notConnected,
     joinWaitlist: notConnected,
-    toggleInterest: notConnected, // needs the event_interests table in BACKEND_CONTRACT.md
+
     submitPartnerLead: notConnected,
 
     adminData: notConnected,
