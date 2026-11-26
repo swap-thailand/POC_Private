@@ -17,6 +17,11 @@ export const settings = {
   // supabase/migrations/20261126000000_resale_cap_and_interests.sql. Turn each on only after that
   // migration is applied to production and verified. Sample-data demos always have both.
   dbFeatures: { resaleMarkup: false, interests: false },
+  // Example events on the live site (services/showcase.js), labelled "Example" everywhere.
+  // 'auto': show them only while the database has no upcoming published events, so real events
+  //         replace them automatically the moment they go live. 'always': show them after real events.
+  // 'off': never. Sample-data demos are unaffected (they are all sample data already).
+  showcase: { mode: 'auto' },
   // How long a buyer can hold a listing while paying.
   holdMinutes: 10,
   // The buyer's confirm window closes this many hours after the event starts,

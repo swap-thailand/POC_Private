@@ -8,12 +8,21 @@ const PALETTE = [
   'linear-gradient(160deg,#3cf0b0 0%,#0094ff 100%)',
 ];
 const KNOWN = ['wp', 'clutch', 'edc', 's2o'];
+// Real events from the database get the same poster art when their poster title or name matches.
+const MATCH = { wp: /white\s*party/i, clutch: /clutch/i, edc: /\bedc\b/i, s2o: /\bs2o\b/i };
 const hash = s => [...String(s)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+export function posterKey(ev) {
+  if (KNOWN.includes(ev.posterKey)) return ev.posterKey;
+  if (KNOWN.includes(ev.id)) return ev.id;
+  const text = `${ev.posterTitle || ''} ${ev.name || ''}`;
+  return KNOWN.find(k => MATCH[k].test(text)) || null;
+}
 
 export function poster(ev, big = false) {
-  const known = KNOWN.includes(ev.id);
-  const style = known ? '' : ` style="--p-bg:${PALETTE[hash(ev.id) % PALETTE.length]}"`;
-  return `<div class="poster ${known ? 'p-' + esc(ev.id) : ''} ${big ? 'big' : ''}"${style}>
+  const key = posterKey(ev);
+  const style = key ? '' : ` style="--p-bg:${PALETTE[hash(ev.id) % PALETTE.length]}"`;
+  return `<div class="poster ${key ? 'p-' + key : ''} ${big ? 'big' : ''}"${style}>
+    ${ev.sample ? `<span class="ex-badge">${t('exBadge')}</span>` : ''}
     <span class="p-date">${esc(eventDate(ev.startsAt, getLang()))}</span>
     <span class="p-name">${esc(ev.posterTitle || ev.name)}</span>
     <span class="p-venue">${esc(ev.venue)} · ${esc(ev.city)}</span></div>`;

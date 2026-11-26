@@ -7,6 +7,7 @@ import { t, getLang, setLang } from './i18n/index.js';
 import { esc, readFile, countdown } from './lib/format.js';
 import { logoSvg, faviconHref } from './lib/logo.js';
 import { api, initApi, ServiceError, errorKeys } from './services/index.js';
+import { isExampleId } from './services/showcase.js';
 import { homeView, eventGrid } from './views/home.js';
 import { eventView, listingModal, waitlistModal } from './views/event.js';
 import { ticketsView, disputeModal, checkoutModal } from './views/tickets.js';
@@ -167,6 +168,7 @@ const actions = {
     toast(t('holdLeft', { t: countdown(api.timing().holdMs) }));
   },
   async toggleInterest(id) {
+    if (isExampleId(id)) return toast(t('exOnly'));
     if (!user) { location.hash = '#account'; return; }
     const r = await api.toggleInterest(id);
     toast(r.interested ? t('interestOnToast', { n: r.count.toLocaleString('en-US') }) : t('interestOffToast'));

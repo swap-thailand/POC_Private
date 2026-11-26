@@ -16,7 +16,7 @@ function listingRow(l, user) {
 function interestButton(e, user) {
   if (!e.interestEnabled) return '';
   const count = `<span class="int-count">${t('interestPeople', { n: num(e.interestedCount) })}</span>`;
-  if (!user) return `<a class="interest-btn" href="#account">${heart(false)} ${t('interestBtn')}</a>${count}`;
+  if (!user && !e.sample) return `<a class="interest-btn" href="#account">${heart(false)} ${t('interestBtn')}</a>${count}`;
   return `<button class="interest-btn ${e.youInterested ? 'on' : ''}" data-action="toggleInterest" data-id="${esc(e.id)}" aria-pressed="${e.youInterested}">${heart(e.youInterested)} ${t('interestBtn')}</button>${count}`;
 }
 
@@ -31,6 +31,7 @@ export async function eventView({ api, state, user }, id) {
   <div class="ev-hero-grid">${poster(e, true)}<div class="ev-head"><span class="kicker">${esc(eventDate(e.startsAt, getLang()))} · ${esc(e.venue)}, ${esc(e.city)}</span>
   <h1>${esc(e.name)}</h1><p class="lead">${esc(e.subtitle)} · ${esc(e.artists.join(', '))}</p>
   <div class="ev-actions">${interestButton(e, user)}<div class="avail"><span class="dot"></span>${t('available', { n: listings.length })}</div></div>
+  ${e.sample ? `<p class="notice ex-notice">${t('exEventNotice')}</p>` : ''}
   ${e.strictFaceValue ? `<p class="notice">${t('strictNote')}</p>` : ''}
   <h4 class="mini">${t('ticketTypes')}</h4>
   <div class="types">${e.ticketTypes.map(tt => `<span class="type-pill">${typeName(tt)}<small>${t('faceValue')} ${baht(tt.faceValue)}</small></span>`).join('')}</div>
@@ -43,7 +44,8 @@ export async function eventView({ api, state, user }, id) {
 
 export function listingModal(l, event, user) {
   const own = user && l.seller?.id === user.id;
-  const cta = !user
+  const cta = event.sample ? `<p class="notice ex-notice">${t('exOnly')}</p>`
+    : !user
     ? `<a class="btn primary wide" href="#account" data-action="closeModal">${t('signInToBuy')}</a>`
     : own ? `<p class="notice">${t('ownListing')}</p>`
       : `<button class="btn primary wide" data-action="reserve" data-id="${esc(l.id)}">${t('reserveCta', { min: settings.holdMinutes })}</button><p class="mini" style="margin-top:8px">${t('reserveNote')}</p>`;

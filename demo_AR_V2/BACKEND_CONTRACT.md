@@ -64,6 +64,10 @@ Suggested additions (names are suggestions, shapes match the mock):
 | `partner_leads (id, first_name, last_name, email, contact, company, roles text[], city, volume, ticketing, message, consent, created_at)`, insert-only for anon, read for admins | Partner with us form |
 | `activity (at, type, detail, user_id null)` and `feedback (at, channel, text)` | Pilot dashboard |
 
+## Example events (live site)
+
+The connected adapter is wrapped by `src/services/showcase.js`. When `listEvents()` returns no events, example events (ids starting `example-`) are added; `getEvent()` serves them locally, and `toggleInterest`, `joinWaitlist`, `reserveListing` and `submitListing` throw `ServiceError('sampleOnly')` for example ids without calling the backend. Nothing in the backend needs to change for this.
+
 ## Function reference
 
 Shapes are abbreviated; see `mockAdapter.js` (`listingView`, `eventView`, `orderView`) for the full objects.

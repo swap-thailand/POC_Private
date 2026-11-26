@@ -22,4 +22,5 @@ export const errorKeys = {
   priceInvalid: 'wholeBaht',
   partnerFields: 'pt_needFields',
   cardDeclined: 'cardDeclined',
+  sampleOnly: 'exOnly',
 };

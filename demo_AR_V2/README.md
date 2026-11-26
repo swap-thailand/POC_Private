@@ -58,6 +58,10 @@ Thai copy in `src/i18n/th.js` needs a native-speaker review before anyone outsid
 
 Put `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in `.env.local` (see `.env.example`). The build checks the key is a publishable/anon key and refuses a service-role key. `npm run build` fails without keys rather than quietly shipping sample data (set `DEMO_ALLOW_SAMPLE=1` to override on purpose). With keys set, `src/services/supabaseAdapter.js` is used instead of the sample data. Today it handles sign-in, events and seller submission (the same calls as v1). Every other function returns a "not connected yet" message. See [BACKEND_CONTRACT.md](./BACKEND_CONTRACT.md) for what each one needs.
 
+## Example events on the live site
+
+While the connected database has no upcoming published events, the live site shows the sample events from `src/services/seed.js`, labelled "Example" (`src/services/showcase.js`, switch: `settings.showcase.mode`). Publishing one real event replaces them automatically. Starter SQL for the same events: `supabase/seed/starter_events.sql`. Full notes: `docs/plug-and-play-live-data.md`.
+
 ## Database migrations
 
 Migrations live in `supabase/migrations/` and are applied in filename order:

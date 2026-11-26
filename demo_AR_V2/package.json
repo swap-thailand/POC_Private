@@ -8,7 +8,7 @@
     "build:demo": "vite build --mode demo",
     "preview": "vite preview",
     "test:e2e": "playwright test",
-    "test:db": "node tests/db/migrations.db.mjs && node tests/db/adapter-flags.db.mjs"
+    "test:db": "node tests/db/migrations.db.mjs && node tests/db/adapter-flags.db.mjs && node tests/db/showcase.db.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.119.2"

@@ -248,4 +248,9 @@ export default {
   confirmPay: 'Pay {amount}', simulateDecline: 'Test mode: simulate a declined card', cardPaid: 'Payment confirmed. The seller is transferring your ticket.',
   cardDeclined: 'Your card was declined. Try another card or pay by PromptPay.',
   act_cardpay: 'Paid by card', act_carddecline: 'Card declined',
+  exBadge: 'Example',
+  exNotice: 'Example events: these show how JingTix works. Real tickets appear here as soon as the first listings go live.',
+  exEventNotice: 'This is an example event to show how JingTix works. Buying, Interested and alerts switch on when real listings go live.',
+  exOnly: 'This is an example event. Tickets open when real listings go live.',
+  sellNoEvents: 'Selling opens as soon as the first events go live. Check back soon.',
 };

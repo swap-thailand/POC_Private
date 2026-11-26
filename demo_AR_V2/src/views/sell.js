@@ -29,7 +29,8 @@ export function sellSummary(state) {
 export async function sellView({ api, user, state }) {
   if (!user) return narrow(`<h1 class="page-title">${t('sellTitle')}</h1><p>${t('signInToSell')}</p><a class="btn primary" href="#account">${t('signIn')}</a>`);
   if (user.banned) return narrow(`<h1 class="page-title">${t('sellTitle')}</h1><p class="notice warn">${t('bannedMsg')}</p>`);
-  state.events = await api.listEvents();
+  state.events = (await api.listEvents()).filter(e => !e.sample);
+  if (!state.events.length) return narrow(`<h1 class="page-title">${t('sellTitle')}</h1><p class="notice">${t('sellNoEvents')}</p><a class="btn primary" href="#home">${t('back')}</a>`);
   const s = state.sell;
   if (!state.events.some(e => e.id === s.eventId)) s.eventId = state.events[0]?.id || '';
   const ev = state.events.find(e => e.id === s.eventId);

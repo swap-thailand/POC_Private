@@ -38,7 +38,7 @@ export async function homeView({ api, state }) {
     <ul class="trust"><li>${t('t1')}</li><li>${t('t2')}</li><li>${t('t3')}</li></ul></div>
   ${f ? `<div class="hero-aside"><a href="#event-${esc(f.id)}" class="feature">${poster(f, true)}<div class="feature-meta"><b>${esc(f.name)}</b><span>${t('listed', { n: f.liveCount })}</span></div></a></div>` : ''}
 </div></section>
-<section class="section" id="events"><div class="wrap"><div class="sec-head"><h2>${t('upcoming')}</h2></div><div class="events-grid" id="grid">${eventGrid(events, state.q)}</div></div></section>
+<section class="section" id="events"><div class="wrap"><div class="sec-head"><h2>${t('upcoming')}</h2></div>${events.some(e => e.sample) ? `<p class="notice ex-notice">${t('exNotice')}</p>` : ''}<div class="events-grid" id="grid">${eventGrid(events, state.q)}</div></div></section>
 <section class="section how" id="how"><div class="wrap"><div class="sec-head"><h2>${t('howTitle')}</h2></div>
   <div class="how-grid">${['buyers', 'sellers'].map((k, j) => `<div class="how-col"><h3>${t(k)}</h3><ol>${[1, 2, 3].map(i => `<li><b>${i}</b><span>${t((j ? 'hs' : 'hb') + i)}</span></li>`).join('')}</ol></div>`).join('')}</div>
 </div></section>
