@@ -253,7 +253,7 @@ blockquote{padding:12px 14px;border-radius:calc(var(--card-r)*.6);background:var
     <div class="head-actions">
       <button class="lang" id="langBtn" aria-label="Switch language">TH</button>
       <a class="btn primary sell-cta" href="#sell" data-i="navSell"></a>
-      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
+      <button class="lang" id="accountBtn" aria-label="Account" title="Account"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></button><button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
     </div>
   </div>
 </header>
@@ -360,7 +360,7 @@ return `<section class="section"><div class="wrap sell-grid"><div><h1 class="pag
  <li><b>2</b><div><h3>${t('s2')}</h3><button class="upload ${sell.file?'done':''}" id="sFile">${sell.file?'✔ ticket.pdf':'⬆ '+t('upHint')}</button></div></li>
  <li><b>3</b><div><h3>${t('s3')}</h3><div class="price-in"><span>฿</span><input id="sPrice" inputmode="numeric" value="${sell.price}" placeholder="${lim}" aria-label="${t('s3')}"></div>
   <small class="${over?'err':''}">${over?t('tooHigh'):t('max',{max:lim.toLocaleString('en-US')})}</small>
-  <label class="check"><input type="checkbox" id="sId" ${sell.id?'checked':''}> ${t('id')}</label></div></li></ol></div>
+  <p class="small muted">${authText("Identity verification simulated","จำลองการยืนยันตัวตนแล้ว")}</p></div></li></ol></div>
 <aside class="summary"><h3>${t('summary')}</h3>${poster(e)}<dl class="kv"><dt>${t('tPrice')}</dt><dd>${p&&!over?baht(p):'—'}</dd><dt>${t('fee')}</dt><dd>${p&&!over?'−'+baht(f):'—'}</dd><dt class="tot">${t('youGet')}</dt><dd class="tot">${p&&!over?baht(p-f):'—'}</dd></dl>
 <p class="muted small">💸 ${t('hs3')}</p><button class="btn primary wide" id="sGo" ${sell.status!==null?'disabled':''}>${t('list')}</button>
 ${sell.status!==null?`<ul class="status">${st.map((s,i)=>`<li class="${i<=sell.status?'on':''}"><span></span>${t(s)}</li>`).join('')}</ul>`:''}</aside></div></section>`;}
@@ -368,8 +368,8 @@ function bindSell(){const lim=ev(sell.ev).cap;
  $('#sEv').onchange=e=>{sell.ev=e.target.value;route();};
  $('#sFile').onclick=()=>{sell.file=true;route();};
  $('#sPrice').oninput=e=>{sell.price=e.target.value.replace(/\D/g,'');const pos=e.target.selectionStart;route();const n=$('#sPrice');n.focus();n.setSelectionRange(pos,pos);};
- $('#sId').onchange=e=>{sell.id=e.target.checked;};
- $('#sGo').onclick=()=>{const p=Number(sell.price);if(!sell.file||!p||p>lim||!sell.id){toast(t('needAll'));return;}
+
+ $('#sGo').onclick=()=>{const p=Number(sell.price);if(!demoAccount?.verified||!sell.file||!p||p>lim||!sell.id){toast(t('needAll'));return;}
   sell.status=0;log('aSubmit',`${ev(sell.ev).name} · ${baht(p)}`);route();
   [1,2,3].forEach(i=>setTimeout(()=>{sell.status=i;if(i===2)toast(t('soldToast'));if(location.hash==='#sell')route();},i*2200));};}
 
@@ -401,9 +401,20 @@ function pilot(){const A=S.activity,c=k=>A.filter(a=>a.type===k).length,buys=c('
 function bindPilot(){$('#fbForm').onsubmit=e=>{e.preventDefault();const tx=$('#fbTx').value.trim();if(!tx)return;S.feedback.unshift({ts:new Date().toISOString(),channel:$('#fbCh').value,text:tx});save();route();};}
 async function copyText(s,btn){try{await navigator.clipboard.writeText(s);btn.textContent=t('copied');}catch(e){toast(s.slice(0,140));}}
 
+// Development-only UI simulation. No OAuth tokens or identity documents are collected.
+let demoAccount=null;
+const authText=(en,th)=>S.lang==='th'?th:en;
+function accountUI(selling=false){
+ if(demoAccount){openModal('<h2>'+authText('Your account','บัญชีของคุณ')+'</h2><p>'+authText('Demo Google account','บัญชี Google ทดลอง')+'</p><p>'+ (demoAccount.verified?authText('Simulated verification complete','ยืนยันตัวตนจำลองแล้ว'):authText('Not verified','ยังไม่ยืนยันตัวตน'))+'</p><button class="btn ghost wide" onclick="demoLogout()">'+authText('Sign out','ออกจากระบบ')+'</button>');return;}
+ openModal('<h2>'+authText('Sign in','เข้าสู่ระบบ')+'</h2><p class="muted">'+authText('Development preview: Google OAuth is not configured.','ตัวอย่างสำหรับนักพัฒนา: ยังไม่ได้ตั้งค่า Google OAuth')+'</p><button class="btn ghost wide" id="demoGoogle"><b>G</b> '+authText('Continue with Google (demo)','ดำเนินการด้วย Google (ทดลอง)')+'</button>');
+ $('#demoGoogle').onclick=()=>{demoAccount={verified:false};closeModal();if(selling)route();else accountUI();};
+}
+function demoLogout(){demoAccount=null;sell={ev:'wp',file:false,price:'',id:false,status:null};closeModal();route();}
+function verificationUI(){return '<section class="section"><div class="wrap narrow"><h1>'+authText('Verify your identity','ยืนยันตัวตน')+'</h1><p class="muted">'+authText('Development simulation only. Do not upload real identity documents.','สำหรับการทดสอบเท่านั้น ห้ามอัปโหลดเอกสารจริง')+'</p><label class="lbl">'+authText('Verification method','วิธียืนยันตัวตน')+'<select id="idMethod"><option>'+authText('Thai bank ID / NDID','ยืนยันผ่านธนาคารไทย / NDID')+'</option><option>'+authText('Thai national ID','บัตรประชาชนไทย')+'</option><option>'+authText('Foreign passport / ID','หนังสือเดินทาง / บัตรต่างประเทศ')+'</option></select></label><button class="btn primary wide" id="simulateId">'+authText('Simulate successful verification','จำลองการยืนยันสำเร็จ')+'</button></div></section>';}
+$('#accountBtn').onclick=()=>accountUI(location.hash==='#sell');
 function route(){const h=(location.hash||'#home').slice(1);const pg=$('#page');let anchor=null;
  if(h.startsWith('event-')) pg.innerHTML=eventPage(h.slice(6));
- else if(h==='sell'){pg.innerHTML=sellPage();bindSell();}
+ else if(h==='sell'){if(!demoAccount){pg.innerHTML='<section class="section"><div class="wrap narrow"><h1>'+authText('Sign in to sell','เข้าสู่ระบบเพื่อขาย')+'</h1><button class="btn primary" id="sellLogin">'+authText('Sign in','เข้าสู่ระบบ')+'</button></div></section>';$('#sellLogin').onclick=()=>accountUI(true);}else if(!demoAccount.verified){pg.innerHTML=verificationUI();$('#simulateId').onclick=()=>{demoAccount.verified=true;route();};}else{sell.id=true;pg.innerHTML=sellPage();bindSell();}}
  else if(h==='tickets') pg.innerHTML=tickets();
  else if(h==='team') pg.innerHTML=team();
  else if(h==='pilot'){pg.innerHTML=pilot();bindPilot();}
