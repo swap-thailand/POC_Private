@@ -66,15 +66,25 @@ export async function pilotView({ api, user, state }) {
   </div>`);
 }
 
-export async function accountView({ api, user, state }) {
+export async function accountView({ api, user, state, verified, verificationPanel }) {
+  const tr=(en,th)=>getLang()==='th'?th:en;
   if (user) {
-    return narrow(`<h1 class="page-title">${t('accountTitle')}</h1>
-      <p>${t('signedInAs', { name: `<b>${esc(user.name)}</b>` })}</p><p class="mini">${esc(user.email)} · ${user.roles.map(r => t('role_' + r)).join(', ')}</p>
-      <div class="btn-row"><a class="btn primary" href="#verify">${getLang() === "th" ? "ยืนยันตัวตน" : "Verify your identity"}</a><button class="btn ghost" data-action="signOut">${t('signOut')}</button></div>
-      <h4>${t('privacyTitle')}</h4><p class="mini">${t('deleteWarn')}</p>
-      ${state.confirmDelete
-        ? `<div class="btn-row"><button class="btn primary" data-action="deleteAccount">${t('deleteConfirm')}</button><button class="btn ghost" data-action="cancelDelete">${t('cancel')}</button></div>`
-        : `<button class="btn ghost" data-action="askDelete">${t('deleteAccount')}</button>`}`);
+    const relay=user.email?.endsWith('@privaterelay.appleid.com');
+    const row=(icon,label,value)=>`<div class="jt-account-row"><span aria-hidden="true">${icon}</span><div><b>${label}</b><p>${value}</p></div></div>`;
+    return `<section class="section"><div class="wrap"><style>
+    .jt-account-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.jt-account-card{border:1.5px solid currentColor;border-radius:28px;padding:26px;margin-bottom:20px}.jt-account-card h2{font-size:32px;letter-spacing:-.04em;margin-bottom:20px}.jt-account-row{display:flex;align-items:center;gap:16px;border-top:1px solid #ddd;padding:16px 0}.jt-account-row p{margin:4px 0;overflow-wrap:anywhere}.jt-account-row>span{font-size:24px}.jt-account-card .jt-steps{margin:24px 0}.jt-account-card .jt-step h3{font-size:22px}.jt-account-card .jt-step svg{width:30px;height:30px}.jt-complete{text-align:center;padding:32px 0}.jt-complete h3{font-size:42px;line-height:1}.jt-complete-icon{display:grid;place-items:center;background:#d9f5d9;border-radius:50%;width:90px;height:90px;margin:0 auto 24px;font-size:46px;color:#111}@media(max-width:800px){.jt-account-grid{grid-template-columns:1fr}}
+    </style><h1 class="page-title" style="font-size:clamp(52px,8vw,100px);letter-spacing:-.06em">${tr('Account','บัญชี')}</h1><p style="margin-bottom:28px">${tr('Manage your account, verification and settings.','จัดการบัญชี การยืนยันตัวตน และการตั้งค่า')}</p><div class="jt-account-grid"><div><div class="jt-account-card"><h2>${esc(user.name)}</h2>
+    ${row('✉',tr('Email','อีเมล'),relay?tr('Contact email required','กรุณาระบุอีเมลติดต่อ'):esc(user.email||''))}
+    ${row('☎',tr('Phone','โทรศัพท์'),esc(user.phone||tr('Not verified','ยังไม่ยืนยัน')))}
+    <div class="jt-account-row"><span>◎</span><div style="flex:1"><b>${tr('Language','ภาษา')}</b></div><button class="btn ghost sm" data-action="lang">${getLang()==='th'?'ไทย':'English'} ↕</button></div></div>
+    <div class="jt-account-card"><h2>${tr('Account settings','ตั้งค่าบัญชี')}</h2>
+    ${row('⚿',tr('Password','รหัสผ่าน'),tr('Managed by your sign-in provider','จัดการโดยผู้ให้บริการเข้าสู่ระบบ'))}
+    ${row('♧',tr('Notifications','การแจ้งเตือน'),tr('Coming soon','เร็วๆ นี้'))}
+    ${row('▤',tr('Privacy & data','ความเป็นส่วนตัวและข้อมูล'),'<a href="#privacy">'+t('privacyTitle')+'</a>')}
+    <p class="mini">${t('deleteWarn')}</p>
+    ${state.confirmDelete?`<div class="btn-row"><button class="btn primary" data-action="deleteAccount">${t('deleteConfirm')}</button><button class="btn ghost" data-action="cancelDelete">${t('cancel')}</button></div>`:`<button class="btn ghost" data-action="askDelete">${t('deleteAccount')}</button>`}
+    <button class="btn ghost" data-action="signOut">${t('signOut')}</button></div></div>
+    <div class="jt-account-card"><h2>${tr('Verification','การยืนยันตัวตน')}</h2>${verified?`<div class="jt-complete"><div class="jt-complete-icon">✓</div><h3>${tr('Verification completed.','ยืนยันตัวตนสำเร็จ')}</h3><p>${tr('Your account is verified.','บัญชีของคุณได้รับการยืนยันแล้ว')}</p></div>${['Email','Phone','Government ID'].map((v,i)=>row('✓',tr(v,['อีเมล','โทรศัพท์','บัตรประจำตัว'][i]),tr('Verified','ยืนยันแล้ว'))).join('')}${api.mode==='sample'?'<p class="mini">Simulated verification</p>':''}`:verificationPanel()}</div></div></div></section>`;
   }
   const sample = api.mode === 'sample';
   return narrow(`<h1 class="page-title">${t('signInTitle')}</h1>
