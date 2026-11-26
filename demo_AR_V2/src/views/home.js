@@ -3,13 +3,19 @@ import { t, getLang } from '../i18n/index.js';
 import { esc, baht, eventDate, num } from '../lib/format.js';
 import { poster, heart } from './components.js';
 
+// Event card. The whole card links to the event (stretched link); the Interested button sits on
+// top of it in the bottom-right corner so fans can tap it without opening the event.
 export function eventCard(ev) {
-  return `<a class="ev-card" href="#event-${esc(ev.id)}">${poster(ev)}
-    <div class="ev-info"><span class="ev-date">${esc(eventDate(ev.startsAt, getLang()))}</span><h3>${esc(ev.name)}</h3>
+  const interest = `<button class="int-mini ${ev.youInterested ? 'on' : ''}" data-action="toggleInterest" data-id="${esc(ev.id)}"
+      aria-pressed="${!!ev.youInterested}" aria-label="${t('interestBtn')}: ${esc(ev.name)}">${heart(ev.youInterested)}
+      <span>${t('interestedN', { n: num(ev.interestedCount || 0) })}</span></button>`;
+  return `<article class="ev-card" data-event="${esc(ev.id)}">${poster(ev)}
+    <div class="ev-info"><span class="ev-date">${esc(eventDate(ev.startsAt, getLang()))}</span>
+    <h3><a class="ev-link" href="#event-${esc(ev.id)}">${esc(ev.name)}</a></h3>
     <p>${esc(ev.venue)}, ${esc(ev.city)}</p>
-    ${ev.interestedCount ? `<p class="ev-int">${heart(ev.youInterested)} ${t('interestedN', { n: num(ev.interestedCount) })}</p>` : ''}
     <div class="ev-foot"><span class="pill ${ev.liveCount ? '' : 'muted-pill'}">${ev.liveCount ? t('listed', { n: ev.liveCount }) : t('waitlistOpen')}</span>
-    ${ev.minTotal ? `<span class="ev-from">${t('from')} <b>${baht(ev.minTotal)}</b></span>` : ''}</div></div></a>`;
+    ${ev.minTotal ? `<span class="ev-from">${t('from')} <b>${baht(ev.minTotal)}</b></span>` : ''}
+    ${interest}</div></div></article>`;
 }
 
 export function eventGrid(events, q) {

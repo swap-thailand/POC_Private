@@ -8,7 +8,7 @@ export const brand = {
   logoMark: '↘', // text fallback, no longer shown in the header
   tagline: { en: 'The nightlife ticket swap', th: 'แลกตั๋วสายไนท์ไลฟ์' },
   headline: { en: 'Find your way in.', th: 'หาทางเข้างานของคุณ' },
-  secondaryLine: { en: "Someone's out, you're in.", th: 'มีคนไปไม่ได้ คุณได้เข้า' },
+  secondaryLine: { en: 'Fan to fan, fair prices, fully protected.', th: 'แฟนถึงแฟน ราคาแฟร์ ปลอดภัยทุกใบ' },
   hashtag: '#keepitjing',
   lineHandle: '@jingtix',
   supportEmail: 'hello@example.com',

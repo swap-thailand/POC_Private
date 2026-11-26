@@ -22,7 +22,7 @@ const SAMPLE = {
   priceBands: [['pt_bFace', 22, 0], ['pt_b5', 15, 0.03], ['pt_b10', 15, 0.08], ['pt_b15', 8, 0.13], ['pt_b20', 4, 0.18]], // [label, swaps, mid markup]
   soldIn24h: [91, 87, 79, 58, 41], // % of listings sold within 24 hours, same bands
   channels: [['pt_chQr', 34], ['pt_chLine', 27], ['pt_chIg', 21], ['pt_chFriends', 18]],
-  avgFace: 3300, speed: '38m', fakes: 0,
+  avgFace: 3300, speed: '38m',
   exampleFace: 3200,
 };
 const total = a => a.reduce((x, y) => x + y, 0);
@@ -51,7 +51,7 @@ function swapsChart(height) {
 // Hero card: headline numbers plus the swaps chart in miniature.
 function sampleDashboard() {
   const st = sampleStats();
-  const tiles = [[String(st.swaps), 'pt_dSwapped'], [`+${Math.round(st.avgMarkup * 100)}%`, 'pt_dMarkup'], [SAMPLE.speed, 'pt_dSpeed'], [String(SAMPLE.fakes), 'pt_dFakes']];
+  const tiles = [[String(st.swaps), 'pt_dSwapped'], [`+${Math.round(st.avgMarkup * 100)}%`, 'pt_dMarkup'], [SAMPLE.speed, 'pt_dSpeed'], ['100%', 'pt_dVerified']];
   return `<div class="pt-dash" aria-label="${t('pt_dashLabel')}">
     <div class="pt-dash-head"><b>White Party Bangkok</b><span>${t('pt_sample')}</span></div>
     <div class="pt-tiles">${tiles.map(([n, k]) => `<div><b>${n}</b><span>${t(k)}</span></div>`).join('')}</div>

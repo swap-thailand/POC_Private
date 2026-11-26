@@ -153,10 +153,10 @@ test('about us page tells the story and the partner page no longer repeats the p
   const about = page.viewportSize().width > 860 ? page.locator('.nav a[href="#about"]') : page.locator('.site-foot a[href="#about"]');
   await about.click();
   await expect(page.locator('h1')).toHaveText('By the community, for the community.');
-  await expect(page.locator('#page')).toContainText('What nightlife in Thailand is up against');
+  await expect(page.locator('#page')).toContainText('Why a ticket exchange, why now');
   await expect(page.locator('#page .pt-card')).toHaveCount(6);
   await go(page, '#partners');
-  await expect(page.locator('#page')).not.toContainText('What nightlife in Thailand is up against');
+  await expect(page.locator('#page')).not.toContainText('Why a ticket exchange, why now');
   const icon = await page.locator('link[rel=icon][type="image/svg+xml"]').getAttribute('href');
   expect(icon.startsWith('data:image/svg+xml')).toBe(true);
 });
@@ -171,7 +171,16 @@ test('interested: fans mark an event and the count goes up and down', async ({ p
   await page.reload();
   await expect(page.locator('.int-count')).toHaveText('2,311 people interested');
   await go(page, '#home');
-  await expect(page.locator('.ev-card[href="#event-edc"] .ev-int')).toContainText('2,311 interested');
+  const card = page.locator('.ev-card[data-event=edc]');
+  await expect(card.locator('.int-mini')).toContainText('2,311 interested');
+  await expect(card.locator('.int-mini')).toHaveAttribute('aria-pressed', 'true');
+  // tapping the heart on the card toggles it without opening the event
+  await card.locator('.int-mini').click();
+  await expect(page.locator('.ev-card[data-event=edc] .int-mini')).toContainText('2,310 interested');
+  await expect(page).toHaveURL(/#home$/);
+  await page.locator('.ev-card[data-event=edc] .int-mini').click();
+  await page.locator('.ev-card[data-event=edc] .ev-link').click();
+  await expect(page).toHaveURL(/#event-edc$/);
   await go(page, '#event-edc');
   await page.locator('.interest-btn').click();
   await expect(page.locator('.interest-btn')).toHaveAttribute('aria-pressed', 'false');
@@ -245,7 +254,7 @@ test('delete account removes the profile', async ({ page }) => {
 
 test('partner page: venue submits an enquiry and admin sees it', async ({ page }) => {
   await page.goto('/#partners');
-  await expect(page.locator('h1')).toContainText('Not the scalpers');
+  await expect(page.locator('h1')).toContainText('Your crowd, your rules.');
   await page.locator('[data-action=scrollTo][data-id=partnerForm]').click();
   const f = page.locator('form[data-form=partnerLead]');
   await f.locator('input[name=firstName]').fill('Nok');
@@ -312,5 +321,5 @@ test('Partner with us sits at the far right of the header', async ({ page }) => 
     await page.locator('[data-action=burger]').click();
     await page.locator('.nav .nav-partner').click();
   }
-  await expect(page.locator('h1')).toContainText('Not the scalpers');
+  await expect(page.locator('h1')).toContainText('Your crowd, your rules.');
 });
