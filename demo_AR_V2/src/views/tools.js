@@ -70,7 +70,7 @@ export async function accountView({ api, user, state }) {
   if (user) {
     return narrow(`<h1 class="page-title">${t('accountTitle')}</h1>
       <p>${t('signedInAs', { name: `<b>${esc(user.name)}</b>` })}</p><p class="mini">${esc(user.email)} · ${user.roles.map(r => t('role_' + r)).join(', ')}</p>
-      <div class="btn-row"><button class="btn ghost" data-action="signOut">${t('signOut')}</button></div>
+      <div class="btn-row"><a class="btn primary" href="#verify">${getLang() === "th" ? "ยืนยันตัวตน" : "Verify your identity"}</a><button class="btn ghost" data-action="signOut">${t('signOut')}</button></div>
       <h4>${t('privacyTitle')}</h4><p class="mini">${t('deleteWarn')}</p>
       ${state.confirmDelete
         ? `<div class="btn-row"><button class="btn primary" data-action="deleteAccount">${t('deleteConfirm')}</button><button class="btn ghost" data-action="cancelDelete">${t('cancel')}</button></div>`
@@ -79,6 +79,7 @@ export async function accountView({ api, user, state }) {
   const sample = api.mode === 'sample';
   return narrow(`<h1 class="page-title">${t('signInTitle')}</h1>
     <form class="form" data-form="signIn">
+      ${sample ? `<p class="mini">Google OAuth is not configured in this local demo. Use a sample email to test the verification journey.</p>` : ""}
       ${sample ? `<label>${t('name')}<input type="text" name="name" autocomplete="name"></label>` : ''}
       <label>${t('email')}<input type="email" name="email" required autocomplete="email"></label>
       ${sample ? `<label>${t('lineId')}<input type="text" name="lineId"></label>` : ''}
