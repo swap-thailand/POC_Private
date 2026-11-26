@@ -2,6 +2,7 @@
   "name": "jingtix",
   "compatibility_date": "2026-11-25",
   "assets": {
-    "directory": "./demo_AR_V1"
+    "directory": "./demo_AR_V2/dist",
+    "not_found_handling": "single-page-application"
   }
 }
