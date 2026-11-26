@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 
-// Same Supabase key checks as demo_AR_V1: only a publishable or anon key may reach the browser.
+// Supabase key checks: only a publishable or anon key may reach the browser.
 function isPublicKey(key) {
   if (/^sb_publishable_[A-Za-z0-9_-]+$/.test(key)) return true;
   if (!/^[\w-]+\.[\w-]+\.[\w-]+$/.test(key)) return false;
