@@ -1,4 +1,5 @@
 import { brand } from '../config/brand.js';
+import { socialIcons } from '../lib/socialIcons.js';
 import { t } from '../i18n/index.js';
 
 // About us: why JingTix exists. The problem, who it is for, and a way in.
@@ -27,6 +28,6 @@ export function aboutView() {
 
 <section class="section ab-social"><div class="wrap"><div class="sec-head"><h2>${t('followUs')}</h2></div>
   <p class="lead" style="margin-bottom:22px;max-width:720px">${t('followBody')}</p>
-  <div class="social-row">${brand.socials.map(x => `<a class="social-card" href="${x.url}" target="_blank" rel="noopener noreferrer"><span class="social-emoji" aria-hidden="true">${x.emoji}</span><span><b>${x.label}</b><small>${x.handle}</small></span><span class="social-go" aria-hidden="true">↗</span></a>`).join('')}</div>
+  <div class="social-row">${brand.socials.map(x => `<a class="social-card" href="${x.url}" target="_blank" rel="noopener noreferrer"><span class="social-icon">${socialIcons[x.id]}</span><span><b>${x.label}</b><small>${x.handle}</small></span><span class="social-go" aria-hidden="true">↗</span></a>`).join('')}</div>
 </div></section>`;
 }

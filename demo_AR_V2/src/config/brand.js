@@ -13,9 +13,9 @@ export const brand = {
   lineHandle: '@jingtix',
   // Official accounts (from the Socials tab of the team doc). Shown in the footer and on About us.
   socials: [
-    { id: 'instagram', label: 'Instagram', emoji: '📸', handle: '@jingtix', url: 'https://www.instagram.com/jingtix/' },
-    { id: 'x', label: 'X', emoji: '𝕏', handle: '@jingtix', url: 'https://x.com/jingtix' },
-    { id: 'facebook', label: 'Facebook', emoji: '📘', handle: 'JingTix', url: 'https://www.facebook.com/profile.php?id=61596768340479' },
+    { id: 'instagram', label: 'Instagram', handle: '@jingtix', url: 'https://www.instagram.com/jingtix/' },
+    { id: 'x', label: 'X', handle: '@jingtix', url: 'https://x.com/jingtix' },
+    { id: 'facebook', label: 'Facebook', handle: 'JingTix', url: 'https://www.facebook.com/profile.php?id=61596768340479' },
   ],
   supportEmail: 'hello@example.com',
   // Used for browser storage keys and file names. Lowercase, no spaces.

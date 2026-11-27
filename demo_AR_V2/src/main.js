@@ -6,6 +6,7 @@ import { settings, TEST_MODE } from './config/settings.js';
 import { t, getLang, setLang } from './i18n/index.js';
 import { esc, readFile, countdown } from './lib/format.js';
 import { logoSvg, faviconHref } from './lib/logo.js';
+import { socialIcons } from './lib/socialIcons.js';
 import { api, initApi, ServiceError, errorKeys } from './services/index.js';
 import { isExampleId } from './services/showcase.js';
 import { homeView, eventGrid } from './views/home.js';
@@ -92,10 +93,10 @@ function header(r) {
     </div></div>`;
 }
 function footer() {
-  const social = brand.socials.map(x => `<a href="${x.url}" target="_blank" rel="noopener noreferrer" aria-label="JingTix on ${x.label}"><span aria-hidden="true">${x.emoji}</span> ${x.label}</a>`).join('');
-  return `<div class="wrap foot-social"><b>${t('followUs')}</b>${social}</div><div class="wrap foot-row"><p>${t(api.mode === 'sample' ? 'footer' : 'footerConnected')}</p>
+  const social = `<span class="foot-icons">${brand.socials.map(x => `<a href="${x.url}" target="_blank" rel="noopener noreferrer" aria-label="JingTix on ${x.label}" title="${x.label}">${socialIcons[x.id]}</a>`).join('')}</span>`;
+  return `<div class="wrap foot-row"><p>${t(api.mode === 'sample' ? 'footer' : 'footerConnected')}</p>
     <div class="foot-links"><a href="#about">${t('navAbout')}</a><a href="#partners">${t('partnerLink')}</a><a href="#privacy">${t('privacy')}</a>${isAdmin() ? `<a href="#pilot">${t('pilot')}</a>` : ''}
-    ${testTools() ? `<a href="#test">${t('testTools')}</a><button data-action="resetDemo">${t('reset')}</button>` : ''}</div></div>`;
+    ${testTools() ? `<a href="#test">${t('testTools')}</a><button data-action="resetDemo">${t('reset')}</button>` : ''}${social}</div></div>`;
 }
 
 async function page(r) {

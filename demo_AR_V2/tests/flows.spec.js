@@ -326,7 +326,7 @@ test('Partner with us sits at the far right of the header', async ({ page }) => 
 
 test('socials: footer and About us link to the official accounts, opening in a new tab', async ({ page }) => {
   await page.goto('./#home');
-  const foot = page.locator('.foot-social a');
+  const foot = page.locator('.foot-icons a');
   await expect(foot).toHaveCount(3);
   await expect(foot.nth(0)).toHaveAttribute('href', 'https://www.instagram.com/jingtix/');
   await expect(foot.nth(1)).toHaveAttribute('href', 'https://x.com/jingtix');
@@ -340,5 +340,6 @@ test('header logo: two swap arrows travel round the ring', async ({ page }) => {
   await page.goto('./#home');
   const logo = page.locator('header .logo svg');
   await expect(logo.locator('animateTransform')).toHaveCount(1);
-  await expect(logo.locator('path[style*="paint-order"]')).toHaveCount(2);
+  await expect(logo.locator('animateTransform')).toHaveAttribute('dur', '7s');
+  await expect(logo.locator('g[transform*="translate(14 0)"] path')).toHaveCount(2);
 });
