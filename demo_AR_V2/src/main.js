@@ -9,7 +9,7 @@ import { logoSvg, faviconHref } from './lib/logo.js';
 import { socialIcons } from './lib/socialIcons.js';
 import { api, initApi, ServiceError, errorKeys } from './services/index.js';
 import { isExampleId } from './services/showcase.js';
-import { homeView, eventGrid } from './views/home.js';
+import { homeView, eventGrid, searchSuggestions } from './views/home.js';
 import { eventView, listingModal, waitlistModal } from './views/event.js';
 import { ticketsView, disputeModal, checkoutModal } from './views/tickets.js';
 import { sellView, sellSummary, listingsView } from './views/sell.js';
@@ -155,6 +155,7 @@ const actions = {
   burger() { state.menuOpen = !state.menuOpen; $('siteHead').classList.toggle('nav-open', state.menuOpen); },
   lang() { setLang(getLang() === 'en' ? 'th' : 'en'); return true; },
   scrollEvents() { $('events')?.scrollIntoView({ behavior: 'smooth' }); },
+  clearSearch() { state.q = ''; const input = $('q'); if (input) input.value = ''; if ($('grid')) $('grid').innerHTML = eventGrid(state.events || [], ''); showSuggestions(false); input?.focus({ preventScroll: true }); },
   lineToast() { toast(`LINE ${brand.lineHandle}`); },
   scrollTo(id) { $(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); $(id)?.querySelector('input')?.focus({ preventScroll: true }); },
   partnerAgain() { state.partnerSent = false; return true; },
@@ -324,13 +325,32 @@ const forms = {
     await render();
     $('partnerForm')?.scrollIntoView({ block: 'start' });
   },
+  search() { runSearch(); },
   async feedback(f) { await api.addFeedback({ channel: f.channel.value, text: f.text.value }); return true; },
 };
+
+// ---------- search ----------
+function showSuggestions(open = true) {
+  const list = $('qSuggest'), input = $('q');
+  if (!list || !input) return;
+  const html = open ? searchSuggestions(state.events || [], state.q) : '';
+  list.innerHTML = html;
+  list.hidden = !html;
+  input.setAttribute('aria-expanded', String(!!html));
+}
+// Run the search: filter the list, close the suggestions and bring the results into view.
+function runSearch() {
+  const input = $('q');
+  if (input) state.q = input.value;
+  if ($('grid')) $('grid').innerHTML = eventGrid(state.events || [], state.q);
+  showSuggestions(false);
+  $('events')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 // ---------- inputs ----------
 async function onInput(el) {
   const kind = el.dataset.input;
-  if (kind === 'search') { state.q = el.value; $('grid').innerHTML = eventGrid(state.events, state.q); }
+  if (kind === 'search') { state.q = el.value; $('grid').innerHTML = eventGrid(state.events, state.q); showSuggestions(); }
   if (kind === 'sellEvent') { state.sell.eventId = el.value; state.sell.ticketTypeId = ''; await render(); }
   if (kind === 'sellType') { state.sell.ticketTypeId = el.value; $('sellSummary').innerHTML = sellSummary(state); }
   if (kind === 'sellPrice') { state.sell.price = el.value; $('sellSummary').innerHTML = sellSummary(state); }
@@ -357,6 +377,7 @@ async function onFile(el) {
 
 // ---------- events ----------
 document.addEventListener('click', e => {
+  if (!e.target.closest?.('.q-wrap')) showSuggestions(false);
   const el = e.target.closest('[data-action]');
   if (!el) {
     if (e.target.closest('.nav a') && state.menuOpen) actions.burger();
@@ -376,6 +397,7 @@ document.addEventListener('pointermove', e => {
   if (el) showTip(el, e.clientX, e.clientY); else tip.classList.remove('on');
 });
 document.addEventListener('focusin', e => {
+  if (e.target.id === 'q' && state.q) showSuggestions();
   const el = e.target.closest?.('[data-tip]');
   if (!el) return tip.classList.remove('on');
   const r = el.getBoundingClientRect(); showTip(el, r.left + r.width / 2, r.top);
@@ -384,6 +406,15 @@ document.addEventListener('focusout', () => tip.classList.remove('on'));
 document.addEventListener('scroll', () => tip.classList.remove('on'), { passive: true });
 
 document.addEventListener('keydown', e => {
+  // Search suggestions: arrows move through them, Escape closes them.
+  const inSearch = e.target.id === 'q' || e.target.closest?.('#qSuggest');
+  if (inSearch && $('qSuggest') && !$('qSuggest').hidden) {
+    const opts = [...$('qSuggest').querySelectorAll('a[data-suggest]')];
+    const i = opts.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' && opts.length) { e.preventDefault(); opts[Math.min(i + 1, opts.length - 1)].focus(); return; }
+    if (e.key === 'ArrowUp' && opts.length) { e.preventDefault(); if (i <= 0) $('q').focus(); else opts[i - 1].focus(); return; }
+    if (e.key === 'Escape') { $('q').focus(); showSuggestions(false); return; }
+  }
   if (e.key === 'Escape') closeModal();
   const card = e.target.closest?.('[role=button][data-action]');
   if (card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); card.click(); }

@@ -258,4 +258,8 @@ export default {
   alertFollow: 'Follow @jingtix for drops',
   noneFollow: 'Tickets for this one are on the way. Follow us on Instagram to hear the moment they drop.',
   ticketsSoon: 'Tickets soon',
+  qResult: '{n} events match “{q}”',
+  qResultOne: '1 event matches “{q}”',
+  qClear: 'Clear search',
+  qNoMatch: 'Nothing matches “{q}” yet. Try an artist, venue, city or month.',
 };

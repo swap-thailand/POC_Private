@@ -2,6 +2,7 @@ import { settings } from '../config/settings.js';
 import { t, getLang } from '../i18n/index.js';
 import { esc, baht, eventDate, num } from '../lib/format.js';
 import { poster, heart } from './components.js';
+import { searchEvents, suggestEvents } from '../lib/search.js';
 import { api } from '../services/index.js';
 
 // Event card. The whole card links to the event (stretched link); the Interested button sits on
@@ -20,11 +21,19 @@ export function eventCard(ev) {
 }
 
 export function eventGrid(events, q) {
-  const needle = q.trim().toLowerCase();
-  const rows = needle
-    ? events.filter(e => [e.name, e.venue, e.city, ...(e.artists || [])].join(' ').toLowerCase().includes(needle))
-    : events;
-  return rows.length ? rows.map(eventCard).join('') : `<p class="muted">${t('noResults')}</p>`;
+  const rows = searchEvents(events, q);
+  const head = q.trim() ? `<div class="q-result" role="status"><span>${t(rows.length === 1 ? 'qResultOne' : 'qResult', { n: rows.length, q: esc(q.trim()) })}</span>
+    <button class="q-clear" data-action="clearSearch">${t('qClear')}</button></div>` : '';
+  return head + (rows.length ? rows.map(eventCard).join('') : `<p class="muted q-none">${t('noResults')}</p>`);
+}
+
+// Live suggestions under the search bar: up to five events, each a link to its page.
+export function searchSuggestions(events, q) {
+  if (!q.trim()) return '';
+  const hits = suggestEvents(events, q);
+  if (!hits.length) return `<li class="q-empty" role="presentation">${t('qNoMatch', { q: esc(q.trim()) })}</li>`;
+  return hits.map(ev => `<li role="presentation"><a role="option" href="#event-${esc(ev.id)}" data-suggest>
+    <b>${esc(ev.name)}</b><small>${esc(eventDate(ev.startsAt, getLang()))} · ${esc(ev.venue)}, ${esc(ev.city)}</small></a></li>`).join('');
 }
 
 export async function homeView({ api, state }) {
@@ -34,10 +43,13 @@ export async function homeView({ api, state }) {
   return `
 <section class="hero"><div class="wrap hero-grid">
   <div class="hero-copy"><span class="kicker">${t('heroKicker')}</span><h1>${t('heroTitle')}</h1><p class="lead">${t('heroSub')}</p>
-    <div class="hero-search"><input id="q" data-input="search" placeholder="${t('search')}" value="${esc(state.q)}" aria-label="${t('search')}">
-    <button class="btn primary" data-action="scrollEvents">${t('ctaBuy')}</button></div>
+    <form class="hero-search" role="search" data-form="search" autocomplete="off">
+      <div class="q-wrap"><input id="q" type="search" data-input="search" placeholder="${t('search')}" value="${esc(state.q)}" aria-label="${t('search')}"
+        role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="qSuggest" enterkeyhint="search">
+      <ul id="qSuggest" class="q-suggest" role="listbox" aria-label="${t('search')}" hidden></ul></div>
+      <button class="btn primary" type="submit">${t('ctaBuy')}</button></form>
     <ul class="trust"><li>${t('t1')}</li><li>${t('t2')}</li><li>${t('t3')}</li></ul></div>
-  ${f ? `<div class="hero-aside"><a href="#event-${esc(f.id)}" class="feature">${poster(f, true)}<div class="feature-meta"><b>${esc(f.name)}</b><span>${t('listed', { n: f.liveCount })}</span></div></a></div>` : ''}
+  ${f ? `<div class="hero-aside"><a href="#event-${esc(f.id)}" class="feature">${poster(f, true)}<div class="feature-meta"><b>${esc(f.name)}</b><span>${f.liveCount ? t('listed', { n: f.liveCount }) : t(api.capabilities.waitlist === false && !f.sample ? 'ticketsSoon' : 'waitlistOpen')}</span></div></a></div>` : ''}
 </div></section>
 <section class="section" id="events"><div class="wrap"><div class="sec-head"><h2>${t('upcoming')}</h2></div>${events.some(e => e.sample) ? `<p class="notice ex-notice">${t('exNotice')}</p>` : ''}<div class="events-grid" id="grid">${eventGrid(events, state.q)}</div></div></section>
 <section class="section how" id="how"><div class="wrap"><div class="sec-head"><h2>${t('howTitle')}</h2></div>

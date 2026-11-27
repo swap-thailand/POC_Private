@@ -343,3 +343,38 @@ test('header logo: two swap arrows travel round the ring', async ({ page }) => {
   await expect(logo.locator('animateTransform')).toHaveAttribute('dur', '7s');
   await expect(logo.locator('g[transform*="translate(14 0)"] path')).toHaveCount(2);
 });
+
+test('search: suggestions as you type, Enter shows matching events, Clear resets', async ({ page }) => {
+  await page.goto('./#home');
+  const q = page.locator('#q');
+  await q.fill('gauth');
+  const sug = page.locator('#qSuggest a[data-suggest]');
+  await expect(sug).toHaveCount(1);
+  await expect(sug.first()).toContainText('White Party Bangkok');
+  await expect(q).toHaveAttribute('aria-expanded', 'true');
+  await q.press('Enter');
+  await expect(page.locator('#qSuggest')).toBeHidden();
+  await expect(page.locator('#grid .ev-card')).toHaveCount(1);
+  await expect(page.locator('#grid .q-result')).toContainText('1 event matches');
+  await expect(page).toHaveURL(/#home$/);
+  await page.locator('#grid .q-clear').click();
+  await expect(page.locator('#grid .ev-card')).toHaveCount(4);
+  await expect(q).toHaveValue('');
+});
+
+test('search: a suggestion opens the event, keyboard works, no-match is friendly', async ({ page }) => {
+  await page.goto('./#home');
+  const q = page.locator('#q');
+  await q.fill('festival');
+  await expect(page.locator('#qSuggest a[data-suggest]')).toHaveCount(2);
+  await q.press('ArrowDown');
+  await expect(page.locator('#qSuggest a[data-suggest]').first()).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#qSuggest')).toBeHidden();
+  await q.fill('techno berlin');
+  await expect(page.locator('#qSuggest .q-empty')).toContainText('Nothing matches');
+  await expect(page.locator('#grid .q-none')).toBeVisible();
+  await q.fill('edc');
+  await page.locator('#qSuggest a[data-suggest]').first().click();
+  await expect(page.locator('.ev-hero h1')).toHaveText('EDC Thailand');
+});

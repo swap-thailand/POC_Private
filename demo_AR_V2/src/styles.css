@@ -493,3 +493,17 @@ button.apple{border:none;font:inherit;font-weight:700;cursor:pointer}
 .social-go{margin-left:auto;font-size:20px;font-weight:800}
 @media (max-width:860px){.social-row{grid-template-columns:1fr}.foot-icons{margin-left:0}}
 a.alert-link{width:fit-content}
+
+/* Search: suggestions under the hero search bar, result line above the list */
+.q-wrap{position:relative;flex:1;min-width:0;display:flex}
+.q-wrap input{flex:1}
+.hero-search input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;display:none}
+#events{scroll-margin-top:96px}
+.q-suggest{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;list-style:none;margin:0;padding:6px;background:#fff;border:2px solid #000;border-radius:var(--card-r);box-shadow:0 12px 30px rgba(0,0,0,.12)}
+.q-suggest a{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:calc(var(--card-r)*.6);text-decoration:none;color:inherit}
+.q-suggest a:hover,.q-suggest a:focus{background:#000;color:#fff;outline:none}
+.q-suggest b{font-size:16px;font-weight:800}.q-suggest small{font-size:13px;opacity:.7}
+.q-empty{padding:10px 12px;font-size:14px;opacity:.75}
+.q-result{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:12px 0 14px;font-weight:700}
+.q-clear{font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.events-grid > .q-result,.events-grid > .q-none{grid-column:1/-1}

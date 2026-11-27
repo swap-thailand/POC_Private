@@ -8,6 +8,7 @@
     "build:demo": "vite build --mode demo",
     "preview": "vite preview",
     "test:e2e": "playwright test",
+    "test:unit": "node tests/unit/search.unit.mjs",
     "test:db": "node tests/db/migrations.db.mjs && node tests/db/adapter-flags.db.mjs && node tests/db/showcase.db.mjs && node tests/db/rollback.db.mjs"
   },
   "dependencies": {
