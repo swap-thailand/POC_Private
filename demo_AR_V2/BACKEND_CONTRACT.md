@@ -68,6 +68,10 @@ Suggested additions (names are suggestions, shapes match the mock):
 
 The connected adapter is wrapped by `src/services/showcase.js`. When `listEvents()` returns no events, example events (ids starting `example-`) are added; `getEvent()` serves them locally, and `toggleInterest`, `joinWaitlist`, `reserveListing` and `submitListing` throw `ServiceError('sampleOnly')` for example ids without calling the backend. Nothing in the backend needs to change for this.
 
+## Capabilities the screens check
+
+`api.capabilities` tells the screens what the backend can do: `checkout`, `admin`, `testTools`, `interests`, `resaleMarkup`, `waitlist`. With `waitlist: false` (the Supabase adapter today) event pages link to Instagram for drop alerts instead of opening the alert form; set it to true once `joinWaitlist` is built.
+
 ## Function reference
 
 Shapes are abbreviated; see `mockAdapter.js` (`listingView`, `eventView`, `orderView`) for the full objects.

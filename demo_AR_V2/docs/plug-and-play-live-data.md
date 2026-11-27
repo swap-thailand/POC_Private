@@ -4,6 +4,11 @@ Written 2026-11-26 for Ori. This explains what the live site shows today and wha
 
 ## What the live site shows now
 
+> **Update 2026-11-27:** the four starter events are published in production, so jingtix.com shows them
+> and the example events are hidden (mode `'auto'`). Migration `20261126000000` is applied and
+> `settings.dbFeatures` is on. Drop alerts have no table yet, so real events point fans to Instagram
+> for drops instead of the alert form (`capabilities.waitlist = false` in the Supabase adapter).
+
 The live site (jingtix.com, connected to Supabase) asks the database for upcoming published events. If it gets none back, it shows four **example events** instead: Clutch Fridays, White Party Bangkok, EDC Thailand and S2O Songkran. They come with their posters, ticket types, sample listings from sample sellers (Ploy K., Nat S. and others), service fees and Interested counts.
 
 The examples are labelled everywhere: an "Example" badge on each poster, a dashed notice above the event list and on each event page, and a note in place of the Buy button. Buying, Interested, alerts and selling into an example event show "This is an example event" and never touch the database. Example ids start with `example-`, so they cannot collide with database uuids.

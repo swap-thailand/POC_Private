@@ -255,4 +255,7 @@ export default {
   sellNoEvents: 'Selling opens as soon as the first events go live. Check back soon.',
   followUs: 'Follow JingTix',
   followBody: 'New events, fresh tickets and swap tips, in Thai and English. Come say hi.',
+  alertFollow: 'Follow @jingtix for drops',
+  noneFollow: 'Tickets for this one are on the way. Follow us on Instagram to hear the moment they drop.',
+  ticketsSoon: 'Tickets soon',
 };

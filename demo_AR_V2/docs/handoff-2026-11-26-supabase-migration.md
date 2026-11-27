@@ -1,5 +1,13 @@
 # Handoff: production Supabase migration for the 26 Nov 2026 release
 
+> **Status: done on 2026-11-27** (Ori approved). Backup recorded first; dry-run on production in a discarded
+> transaction; applied as `resale_cap_and_interests` (migration history 20261127093547); verified; the four
+> starter events published; `settings.dbFeatures` switched on in release `v2-2026-11-27`.
+> One fix found by the production dry run: the RPC's variable `strict` is a reserved word in PL/pgSQL on
+> production Postgres 17.12 (the local PGlite test accepted it), renamed `face_value_only`.
+> Rollback: `supabase/rollback/20261126000000_down.sql` (rehearsed in `tests/db/rollback.db.mjs`).
+> The steps below are kept for reference.
+
 **For:** Ori (needs Supabase access to the production project)
 **Release already live without it:** tag `v2-2026-11-26` (POC_Private), synced to POC_Demo. On jingtix.com the Interested button is hidden and the Sell form caps prices at face value until this is done.
 

@@ -39,7 +39,7 @@ declare
   seller uuid := auth.uid();
   object_path text := seller::text || '/' || submission_id::text;
   face integer;
-  strict boolean;
+  face_value_only boolean;
   saved_id uuid;
 begin
   if seller is null or submission_id is null then
@@ -52,13 +52,13 @@ begin
     return saved_id;
   end if;
 
-  select face_value_thb, strict_face_value into face, strict from public.events
+  select face_value_thb, strict_face_value into face, face_value_only from public.events
   where id = selected_event and published and starts_at > pg_catalog.now()
   for share;
 
   if face is null or asking_price is null or asking_price < 1
-     or (not strict and asking_price * 5 > face * 6)
-     or (strict and asking_price + pg_catalog.round(asking_price * 0.10) > face) then
+     or (not face_value_only and asking_price * 5 > face * 6)
+     or (face_value_only and asking_price + pg_catalog.round(asking_price * 0.10) > face) then
     raise exception 'The event or asking price is unavailable';
   end if;
 

@@ -492,3 +492,4 @@ button.apple{border:none;font:inherit;font-weight:700;cursor:pointer}
 .social-card b{display:block;font-size:18px}.social-card small{display:block;font-size:14px;opacity:.7}
 .social-go{margin-left:auto;font-size:20px;font-weight:800}
 @media (max-width:860px){.social-row{grid-template-columns:1fr}.foot-icons{margin-left:0}}
+a.alert-link{width:fit-content}

@@ -11,12 +11,13 @@ export const settings = {
   // - sellers pay sellerPercent of the listed price, taken from their payout.
   // Events marked strictFaceValue ignore maxMarkup: the buyer's total, fee included, stays at face value.
   // policyMarkup is the advertised cap (copy, partner page); maxMarkup is what the Sell form enforces.
-  // On the live site maxMarkup drops to 0 until dbFeatures.resaleMarkup is on (see services/index.js).
+  // On the live site maxMarkup drops to 0 if dbFeatures.resaleMarkup is turned off (see services/index.js).
   pricing: { maxMarkup: 0.2, policyMarkup: 0.2, buyerPercent: 0.10, sellerPercent: 0.05, buyerMin: 0, sellerMin: 0 },
   // Live-site (Supabase) switches for features that need migration
-  // supabase/migrations/20261126000000_resale_cap_and_interests.sql. Turn each on only after that
-  // migration is applied to production and verified. Sample-data demos always have both.
-  dbFeatures: { resaleMarkup: false, interests: false },
+  // supabase/migrations/20261126000000_resale_cap_and_interests.sql, applied to production and verified
+  // on 2026-11-27. Turn them off only together with supabase/rollback/20261126000000_down.sql.
+  // Sample-data demos always have both.
+  dbFeatures: { resaleMarkup: true, interests: true },
   // Example events on the live site (services/showcase.js), labelled "Example" everywhere.
   // 'auto': show them only while the database has no upcoming published events, so real events
   //         replace them automatically the moment they go live. 'always': show them after real events.

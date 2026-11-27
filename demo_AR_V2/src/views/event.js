@@ -1,3 +1,4 @@
+import { brand } from '../config/brand.js';
 import { t, tx, getLang } from '../i18n/index.js';
 import { settings } from '../config/settings.js';
 import { esc, baht, eventDate, num } from '../lib/format.js';
@@ -15,12 +16,20 @@ function listingRow(l, user) {
 // RA-style "Interested" button with the live count. Signed-out visitors are sent to sign in.
 function interestButton(e, user) {
   if (!e.interestEnabled) return '';
-  const count = `<span class="int-count">${t('interestPeople', { n: num(e.interestedCount) })}</span>`;
+  const count = e.interestedCount ? `<span class="int-count">${t('interestPeople', { n: num(e.interestedCount) })}</span>` : '';
   if (!user && !e.sample) return `<a class="interest-btn" href="#account">${heart(false)} ${t('interestBtn')}</a>${count}`;
   return `<button class="interest-btn ${e.youInterested ? 'on' : ''}" data-action="toggleInterest" data-id="${esc(e.id)}" aria-pressed="${e.youInterested}">${heart(e.youInterested)} ${t('interestBtn')}</button>${count}`;
 }
 
+// Drop alerts: the waiting-list form where the backend has it, otherwise our Instagram for drops.
+function alertButton(e, alerts, cls) {
+  if (alerts || e.sample) return `<button class="${cls}" data-action="openWaitlist" data-id="${esc(e.id)}">🔔 ${t('alert')}</button>`;
+  const ig = brand.socials.find(x => x.id === 'instagram');
+  return `<a class="${cls}" href="${ig.url}" target="_blank" rel="noopener noreferrer">🔔 ${t('alertFollow')}</a>`;
+}
+
 export async function eventView({ api, state, user }, id) {
+  const alerts = api.capabilities.waitlist !== false;
   const res = await api.getEvent(id);
   if (!res) return `<section class="section"><div class="wrap"><p>${t('noResults')}</p><a class="btn primary" href="#home">${t('back')}</a></div></section>`;
   const { event: e, listings } = res;
@@ -38,8 +47,8 @@ export async function eventView({ api, state, user }, id) {
   <div class="guarantee"><span>🛡</span><div><b>${t('gTitle')}</b><p>${t('gBody')}</p></div></div>
   <p class="transfer"><b>${t('transfer')}:</b> ${esc(tx(e.transfer))}</p></div></div></div></section>
 <section class="section tight"><div class="wrap"><div class="listings">
-  ${listings.length ? listings.map(l => listingRow(l, user)).join('') : `<div class="empty"><p>${t('none')}</p><button class="btn primary" data-action="openWaitlist" data-id="${esc(e.id)}">🔔 ${t('alert')}</button></div>`}
-</div>${listings.length ? `<button class="alert-link" data-action="openWaitlist" data-id="${esc(e.id)}">🔔 ${t('alert')}</button>` : ''}</div></section>`;
+  ${listings.length ? listings.map(l => listingRow(l, user)).join('') : `<div class="empty"><p>${t(alerts ? 'none' : 'noneFollow')}</p>${alertButton(e, alerts, 'btn primary')}</div>`}
+</div>${listings.length ? alertButton(e, alerts, 'alert-link') : ''}</div></section>`;
 }
 
 export function listingModal(l, event, user) {

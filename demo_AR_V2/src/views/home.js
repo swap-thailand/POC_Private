@@ -2,18 +2,19 @@ import { settings } from '../config/settings.js';
 import { t, getLang } from '../i18n/index.js';
 import { esc, baht, eventDate, num } from '../lib/format.js';
 import { poster, heart } from './components.js';
+import { api } from '../services/index.js';
 
 // Event card. The whole card links to the event (stretched link); the Interested button sits on
 // top of it in the bottom-right corner so fans can tap it without opening the event.
 export function eventCard(ev) {
   const interest = `<button class="int-mini ${ev.youInterested ? 'on' : ''}" data-action="toggleInterest" data-id="${esc(ev.id)}"
       aria-pressed="${!!ev.youInterested}" aria-label="${t('interestBtn')}: ${esc(ev.name)}">${heart(ev.youInterested)}
-      <span>${t('interestedN', { n: num(ev.interestedCount || 0) })}</span></button>`;
+      <span>${ev.interestedCount ? t('interestedN', { n: num(ev.interestedCount) }) : t('interestBtn')}</span></button>`;
   return `<article class="ev-card" data-event="${esc(ev.id)}">${poster(ev)}
     <div class="ev-info"><span class="ev-date">${esc(eventDate(ev.startsAt, getLang()))}</span>
     <h3><a class="ev-link" href="#event-${esc(ev.id)}">${esc(ev.name)}</a></h3>
     <p>${esc(ev.venue)}, ${esc(ev.city)}</p>
-    <div class="ev-foot"><span class="pill ${ev.liveCount ? '' : 'muted-pill'}">${ev.liveCount ? t('listed', { n: ev.liveCount }) : t('waitlistOpen')}</span>
+    <div class="ev-foot"><span class="pill ${ev.liveCount ? '' : 'muted-pill'}">${ev.liveCount ? t('listed', { n: ev.liveCount }) : t(api.capabilities.waitlist === false && !ev.sample ? 'ticketsSoon' : 'waitlistOpen')}</span>
     ${ev.minTotal ? `<span class="ev-from">${t('from')} <b>${baht(ev.minTotal)}</b></span>` : ''}
     ${ev.interestEnabled ? interest : ''}</div></div></article>`;
 }

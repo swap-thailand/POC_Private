@@ -20,8 +20,11 @@ let pass = 0, fail = 0;
 const ok = (name, cond) => { cond ? pass++ : fail++; console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}`); };
 const touched = re => calls.some(c => re.test(c));
 
-// Switches off (what ships now)
-ok('switches are off by default', settings.dbFeatures.interests === false && settings.dbFeatures.resaleMarkup === false);
+// Switches off (fallback)
+// Migration 20261126000000 is in production since 2026-11-27, so the shipped settings have both on.
+ok('shipped settings have both switches on', settings.dbFeatures.interests === true && settings.dbFeatures.resaleMarkup === true);
+// The fallback still has to work (e.g. a rollback), so the rest of the first half runs with them off.
+settings.dbFeatures.interests = false; settings.dbFeatures.resaleMarkup = false;
 const api = await initApi();
 ok('live site uses the Supabase adapter', api.mode === 'connected');
 const events = await api.listEvents();

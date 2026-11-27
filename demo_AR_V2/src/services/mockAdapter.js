@@ -151,7 +151,7 @@ function orderView(o) {
 // ---------- the data service ----------
 export const mockAdapter = {
   mode: 'sample',
-  capabilities: { checkout: true, admin: true, testTools: TEST_MODE, interests: true, resaleMarkup: true },
+  capabilities: { checkout: true, admin: true, testTools: TEST_MODE, interests: true, resaleMarkup: true, waitlist: true },
 
   subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
   tick() { return sweep(); },

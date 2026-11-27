@@ -70,7 +70,8 @@ export function createSupabaseAdapter(config) {
 
   return {
     mode: 'connected',
-    capabilities: { checkout: false, admin: false, testTools: false, interests: !!F.interests, resaleMarkup: !!F.resaleMarkup },
+    // waitlist: no table yet, so the site points fans to Instagram for drops instead of the alert form.
+    capabilities: { checkout: false, admin: false, testTools: false, interests: !!F.interests, resaleMarkup: !!F.resaleMarkup, waitlist: false },
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     tick() { return false; },
     timing() { return { holdMs: 10 * 60000, fastTimers: false }; },
