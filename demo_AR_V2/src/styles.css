@@ -479,3 +479,16 @@ button.apple{border:none;font:inherit;font-weight:700;cursor:pointer}
 .poster .ex-badge + .p-date{padding-right:96px}
 .ex-notice{border-style:dashed;border-color:#000;background:#fff;color:#000}
 .ev-card .poster .ex-badge{display:block;top:6px;left:6px;right:auto;padding:3px 7px;font-size:10px}
+
+/* Socials: footer row and About us cards */
+.foot-social{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line);font-size:14px}
+.foot-social b{font-weight:800;margin-right:4px}
+.foot-social a{display:inline-flex;gap:6px;align-items:center;text-decoration:none;font-weight:600}
+.foot-social a:hover{text-decoration:underline;text-underline-offset:3px}
+.social-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.social-card{display:flex;align-items:center;gap:14px;padding:18px 20px;border:2px solid #000;border-radius:var(--card-r);text-decoration:none;color:inherit;transition:background .15s,color .15s}
+.social-card:hover{background:#000;color:#fff}
+.social-emoji{font-size:28px;line-height:1;width:36px;text-align:center}
+.social-card b{display:block;font-size:18px}.social-card small{display:block;font-size:14px;opacity:.7}
+.social-go{margin-left:auto;font-size:20px;font-weight:800}
+@media (max-width:860px){.social-row{grid-template-columns:1fr}}

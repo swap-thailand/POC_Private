@@ -1,3 +1,4 @@
+import { brand } from '../config/brand.js';
 import { t } from '../i18n/index.js';
 
 // About us: why JingTix exists. The problem, who it is for, and a way in.
@@ -22,5 +23,10 @@ export function aboutView() {
   <div class="btn-row"><a class="btn primary" href="#home">${t('ab_ctaEvents')}</a>
     <a class="btn ghost" href="#partners">${t('partnerLink')}</a>
     <button class="btn line" data-action="lineToast">${t('pt_ctaLine')}</button></div>
+</div></section>
+
+<section class="section ab-social"><div class="wrap"><div class="sec-head"><h2>${t('followUs')}</h2></div>
+  <p class="lead" style="margin-bottom:22px;max-width:720px">${t('followBody')}</p>
+  <div class="social-row">${brand.socials.map(x => `<a class="social-card" href="${x.url}" target="_blank" rel="noopener noreferrer"><span class="social-emoji" aria-hidden="true">${x.emoji}</span><span><b>${x.label}</b><small>${x.handle}</small></span><span class="social-go" aria-hidden="true">↗</span></a>`).join('')}</div>
 </div></section>`;
 }

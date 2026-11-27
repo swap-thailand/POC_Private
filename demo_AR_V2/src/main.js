@@ -92,7 +92,8 @@ function header(r) {
     </div></div>`;
 }
 function footer() {
-  return `<div class="wrap foot-row"><p>${t(api.mode === 'sample' ? 'footer' : 'footerConnected')}</p>
+  const social = brand.socials.map(x => `<a href="${x.url}" target="_blank" rel="noopener noreferrer" aria-label="JingTix on ${x.label}"><span aria-hidden="true">${x.emoji}</span> ${x.label}</a>`).join('');
+  return `<div class="wrap foot-social"><b>${t('followUs')}</b>${social}</div><div class="wrap foot-row"><p>${t(api.mode === 'sample' ? 'footer' : 'footerConnected')}</p>
     <div class="foot-links"><a href="#about">${t('navAbout')}</a><a href="#partners">${t('partnerLink')}</a><a href="#privacy">${t('privacy')}</a>${isAdmin() ? `<a href="#pilot">${t('pilot')}</a>` : ''}
     ${testTools() ? `<a href="#test">${t('testTools')}</a><button data-action="resetDemo">${t('reset')}</button>` : ''}</div></div>`;
 }

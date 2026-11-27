@@ -253,4 +253,6 @@ export default {
   exEventNotice: 'This is an example event to show how JingTix works. Buying, Interested and alerts switch on when real listings go live.',
   exOnly: 'This is an example event. Tickets open when real listings go live.',
   sellNoEvents: 'Selling opens as soon as the first events go live. Check back soon.',
+  followUs: 'Follow JingTix',
+  followBody: 'New events, fresh tickets and swap tips, in Thai and English. Come say hi.',
 };

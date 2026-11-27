@@ -1,5 +1,5 @@
 // The JingTix logo mark: a notched ticket inside a circle, with a dot in orbit.
-// Pick a style with brand.logo in src/config/brand.js ('orbit' or 'ring').
+// Pick a style with brand.logo in src/config/brand.js ('orbit', 'ring' or 'swap').
 // Colors come from CSS: lines use currentColor, the ticket face uses --logo-face and the
 // orbiting dot uses --logo-accent (black for now; set it to the brand orange later).
 
@@ -37,6 +37,13 @@ const orbitDot = (r, size, dur, start = 0, k = 1) => `<g transform="rotate(${sta
         <animateTransform attributeName="transform" type="rotate" from="${-start}" to="${-start - 360}" dur="${dur}s" repeatCount="indefinite"/>
         <ellipse rx="${size}" ry="${(size / k).toFixed(2)}" style="${ACCENT}"/></g></g></g></g>`;
 
+// Two arrowheads riding the ring together, half a turn apart: the swap. A thin halo in the
+// background colour opens a clean gap in the dashed ring under each arrow.
+const swapArrows = (r, len, wid, dur, start = -60) => `<g transform="rotate(${start})">
+    <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="${dur}s" repeatCount="indefinite"/>
+      ${[0, 180].map(a => `<g transform="rotate(${a}) translate(${r} 0) rotate(90)"><path d="M${+(len * .6).toFixed(2)} 0 L${+(-len * .4).toFixed(2)} ${+(-wid / 2).toFixed(2)} L${+(-len * .4).toFixed(2)} ${+(wid / 2).toFixed(2)} Z" style="${ACCENT};stroke:var(--logo-face,#fff);stroke-width:1;paint-order:stroke;stroke-linejoin:round"/></g>`).join('')}
+    </g></g>`;
+
 const STYLES = {
   // Version 1: outlined circle, tilted orbit ring, ticket in the middle.
   orbit: () => `
@@ -51,6 +58,12 @@ const STYLES = {
   ring: () => `
     <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2.4"/>
     <g transform="translate(16 16)">${orbitDot(14, 2.3, 7, -60)}</g>
+    <g transform="translate(16 16) rotate(-24)">${ticket(18, 1.6)}</g>`,
+
+  // Version 4: the ring with two swap arrows travelling round it instead of the dot.
+  swap: () => `
+    <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2.4"/>
+    <g transform="translate(16 16)">${swapArrows(14, 5.2, 5, 8)}</g>
     <g transform="translate(16 16) rotate(-24)">${ticket(18, 1.6)}</g>`,
 };
 
